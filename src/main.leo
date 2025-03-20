@@ -98,7 +98,7 @@ program dark_optimistic_oracle.aleo {
         Mapping::set(fees_collected, 0u8, Mapping::get_or_use(fees_collected, 0u8, 0u128) + assertion.cost * ASSERTER_PROTOCOL_FEE_PER1000 / 1000u128);
     }
 
-    async transition dispute_assertion(assertion_id: field, assertion_cost: u128) -> Future {
+    async transition dispute_assertion(public assertion_id: field, private assertion_cost: u128) -> Future {
         // Burn the cost of the assertion.
         let f: Future = token_registry.aleo/burn_public(DOOR_TOKEN_ID, self.caller, assertion_cost);
         return finalize_dispute_assertion(f, self.caller, assertion_id, assertion_cost);
@@ -116,9 +116,9 @@ program dark_optimistic_oracle.aleo {
 
     // Create a new ticket to vote with.
     async transition new_voting_right(
-        sender: token_registry.aleo/Token,
-        assertion_id: field,
-        voter_fee: u128
+        private sender: token_registry.aleo/Token,
+        private assertion_id: field,
+        private voter_fee: u128
     ) -> (VotingRight, token_registry.aleo/Token, Future) {
         let (change, f): (token_registry.aleo/Token, Future) = token_registry.aleo/burn_private(sender, voter_fee);
 
@@ -135,7 +135,7 @@ program dark_optimistic_oracle.aleo {
     }
 
     // Vote privately to agree with a proposal.
-    async transition confirm(v: VotingRight) -> (VotingReceipt, Future) {
+    async transition confirm(private v: VotingRight) -> (VotingReceipt, Future) {
         // Finalize this vote
         return (
             VotingReceipt { owner: self.caller, assertion_id: v.assertion_id, outcome: true },
@@ -152,7 +152,7 @@ program dark_optimistic_oracle.aleo {
     }
 
     // Vote privately to disagree with a proposal.
-    async transition deny(v: VotingRight) -> (VotingReceipt, Future) {
+    async transition deny(private v: VotingRight) -> (VotingReceipt, Future) {
         // Finalize this vote.
         return (
             VotingReceipt { owner: self.caller, assertion_id: v.assertion_id, outcome: false },
@@ -168,7 +168,7 @@ program dark_optimistic_oracle.aleo {
         Mapping::set(dispute_votes, assertion_id, current + 1u64);
     }
 
-    async transition collect_voting_award(award_amount: u128, r: VotingReceipt) -> (token_registry.aleo/Token, Future) {
+    async transition collect_voting_award(private award_amount: u128, private r: VotingReceipt) -> (token_registry.aleo/Token, Future) {
         // No need: assert(self.caller == r.owner);
         let (award, f) : (token_registry.aleo/Token, Future) = token_registry.aleo/mint_private(DOOR_TOKEN_ID, r.owner, award_amount, false, 0u32);
         return (
@@ -186,7 +186,7 @@ program dark_optimistic_oracle.aleo {
         assert(award_amount == assertion.voter_fee * VOTER_REWARD_PER1000 / 1000u128);
     }
 
-    async transition refund_voting_right(refund_amount: u128, v: VotingRight) -> (token_registry.aleo/Token, Future) {
+    async transition refund_voting_right(private refund_amount: u128, private v: VotingRight) -> (token_registry.aleo/Token, Future) {
         // No need: assert(self.caller == r.owner);
         let (refund, f) : (token_registry.aleo/Token, Future) = token_registry.aleo/mint_private(DOOR_TOKEN_ID, v.owner, refund_amount, false, 0u32);
         return (
@@ -201,7 +201,7 @@ program dark_optimistic_oracle.aleo {
         assert(refund_amount == assertion.voter_fee);
     }
 
-    async transition collect_assertion_cost(assertion_cost: u128, assertion_id: field) -> (Future) {
+    async transition collect_assertion_cost(private assertion_cost: u128, public assertion_id: field) -> (Future) {
         let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, assertion_cost * (1000u128 - ASSERTER_PROTOCOL_FEE_PER1000) / 1000u128, 0u32);
         return finalize_collect_assertion_cost(f, assertion_cost, assertion_id);
     }
@@ -216,7 +216,7 @@ program dark_optimistic_oracle.aleo {
         assert(disputer == ZERO_ADDRESS || y > n);
     }
 
-    async transition collect_dispute_award(assertion_cost: u128, assertion_id: field) -> (Future) {
+    async transition collect_dispute_award(private assertion_cost: u128, public assertion_id: field) -> (Future) {
         let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, assertion_cost * (2000u128 - ASSERTER_PROTOCOL_FEE_PER1000) / 1000u128, 0u32);
         return finalize_collect_dispute_award(f, assertion_cost, assertion_id);
     }
@@ -232,7 +232,7 @@ program dark_optimistic_oracle.aleo {
         assert(disputer == ZERO_ADDRESS || y <= n);
     }
 
-    async transition collect_protocol_fees(fees_amount: u128) -> (Future) {
+    async transition collect_protocol_fees(public fees_amount: u128) -> (Future) {
         let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, fees_amount, 0u32);
         return finalize_collect_protocol_fees(f, fees_amount, self.caller);
     }
