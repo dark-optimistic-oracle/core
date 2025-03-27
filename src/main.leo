@@ -51,6 +51,14 @@ program dark_optimistic_oracle.aleo {
 
     mapping dispute_votes: field => u64; // assertionId => disputing votes
 
+    transition balance_key(private token_id: field, private account: address) -> private field {
+        let owner: TokenOwner = TokenOwner {
+            account: account,
+            token_id: token_id
+        };
+        return BHP256::hash_to_field(owner);
+    }
+
     async transition initialize() -> Future {
         let name: u128 = 355052645276405935372531202689035365u128; // "Dark Opt Oracle" ascii encoded
         let symbol: u128 = 1146048338u128; // "DOOR" ascii encoded
