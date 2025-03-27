@@ -3,5 +3,5 @@
 *.prover
 *.verifier
 outputs/
-
 build/
+**/.amareleo*/**
