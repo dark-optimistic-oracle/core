@@ -67,7 +67,7 @@ program dark_optimistic_oracle.aleo {
         let external_authorization_required: bool = false;
         let external_authorization_party: address = self.address;
 
-        let f: Future = token_registry.aleo/register_token(
+        let f1: Future = token_registry.aleo/register_token(
         DOOR_TOKEN_ID,
         name,
         symbol,
@@ -77,11 +77,16 @@ program dark_optimistic_oracle.aleo {
         external_authorization_party
         );
 
-        return finalize_initialize(f);
-        // To do: Distribute supply to treasury.
+        // Distribute supply to treasury.
+        let treasury: address = self.address;
+        let supply: u128 = 1_000_000_000_000_000u128;
+        let f2: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, treasury, supply, 0u32);
+
+        return finalize_initialize(f1, f2);
     }
-    async function finalize_initialize(f: Future) {
-        f.await();
+    async function finalize_initialize(f1: Future, f2: Future) {
+        f1.await();
+        f2.await();
     }
 
 
