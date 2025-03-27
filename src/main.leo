@@ -51,6 +51,14 @@ program dark_optimistic_oracle.aleo {
 
     mapping dispute_votes: field => u64; // assertionId => disputing votes
 
+    transition self_address() -> address {
+        return self.address;
+    }
+    
+    transition get_token_id() -> field {
+        return DOOR_TOKEN_ID;
+    }
+    
     transition balance_key(private token_id: field, private account: address) -> private field {
         let owner: TokenOwner = TokenOwner {
             account: account,
