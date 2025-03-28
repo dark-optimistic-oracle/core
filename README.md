@@ -1,15 +1,17 @@
-#Dark Optimistic Oracle core contracts
+# Dark Optimistic Oracle core contracts
 
 ## How to deploy and run locally
+
+Clone this repository (`git@github.com:dark-optimistic-oracle/core.git`) and `git@github.com:dark-optimistic-oracle/token_registry_workaround.git`.
 
 In one zsh terminal run the following:
 ```zsh
 amareleo-chain start
 ```
 
-To compile:
+To install:
 ```zsh
-leo build
+./install.sh
 ```
 
 To run without executing:
@@ -17,22 +19,23 @@ To run without executing:
 leo run "main" "1u32" "2u32"
 ```
 
-To deploy:
-```zsh
-leo deploy
-```
-and answer "y" to the question:
-```
-Do you want to submit deployment of program `dark_optimistic_oracle.aleo` to network testnet via endpoint http://localhost:3030 using address aleo1rhgdu77hgyqd3xjj8u
-```
+## Command Line Interface
 
-To run and broadcast to the local blockchain:
-```zsh
-leo execute "main" "1u32" "2u32" --broadcast --local
-```
-
-oro"
+The command line interface is in the `cli` folder of this repository. The commands can be run from there:
 
 ```zsh
-leo execute "main" "1u32" "2u32" --broadcast --program "dark_optimistic_oracle.aleo"
+cd cli
 ```
+
+Here is a list of commands:
+
+Each command can be run with a switch `--help` or `-h` to display the usage instructions.
+
+`./self_address.sh` - displays the address of the Dark Optimistic Oracle Aleo program.
+
+`./token_id ` - displays the Token ID of the `Dark Optimistic Oracle` token (`DOOR`).
+
+`./balance.sh <token id> <address>` - displays the unauthorized balance of token id in the account with the given address. The optional `token id` defaults to the `Dark Optimistic Oracle` (`DOOR`) token.
+
+`./authorized_balance.sh <token if> <address>` - displays the authorized balance of token id in the account with the given address. The optional `token id` defaults to the `Dark Optimistic Oracle` (`DOOR`) token.
+
