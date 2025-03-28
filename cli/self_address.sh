@@ -2,6 +2,12 @@
 set -e
 # set -x
 
+# Help message
+if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+    echo "Usage: $0"
+    exit 0
+fi
+
 cd ..
 . ./.env
 
