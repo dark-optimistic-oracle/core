@@ -88,7 +88,7 @@ program dark_optimistic_oracle.aleo {
         // Distribute supply to treasury.
         let treasury: address = self.address;
         let supply: u128 = 1_000_000_000_000_000u128;
-        let f2: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, treasury, 1000u128, 0u32);
+        let f2: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, treasury, max_supply, 0u32);
 
         return finalize_initialize(f1, f2);
     }
