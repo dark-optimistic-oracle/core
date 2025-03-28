@@ -59,10 +59,10 @@ program dark_optimistic_oracle.aleo {
         return DOOR_TOKEN_ID;
     }
     
-    transition balance_key(private token_id: field, private account: address) -> private field {
+    transition balance_key(public token_id: field, public account: address) -> public field {
         let owner: TokenOwner = TokenOwner {
-            account: account,
-            token_id: token_id
+            token_id: token_id,
+            account: account
         };
         return BHP256::hash_to_field(owner);
     }
@@ -76,19 +76,19 @@ program dark_optimistic_oracle.aleo {
         let external_authorization_party: address = self.address;
 
         let f1: Future = token_registry.aleo/register_token(
-        DOOR_TOKEN_ID,
-        name,
-        symbol,
-        decimals,
-        max_supply,
-        external_authorization_required,
-        external_authorization_party
+            DOOR_TOKEN_ID,
+            name,
+            symbol,
+            decimals,
+            max_supply,
+            external_authorization_required,
+            external_authorization_party
         );
 
         // Distribute supply to treasury.
         let treasury: address = self.address;
         let supply: u128 = 1_000_000_000_000_000u128;
-        let f2: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, treasury, supply, 0u32);
+        let f2: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, treasury, 1000u128, 0u32);
 
         return finalize_initialize(f1, f2);
     }
