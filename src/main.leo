@@ -100,21 +100,18 @@ program dark_optimistic_oracle.aleo {
 
     // Propose a new proposal to vote on.
     // Anyone can make an assertion.
-    async transition create_assertion(public assertion: Assertion) -> (field, Future) {
+    async transition create_assertion(public assertion: Assertion) -> Future {
         // Burn the cost of the assertion.
         let f: Future = token_registry.aleo/burn_public(DOOR_TOKEN_ID, self.caller, assertion.cost);
 
-        // Generate a new assertion id.
-        let id: field = BHP256::hash_to_field(assertion.content_hash);
-
-        return (id, finalize_create_assertion (f, self.caller, id, assertion));
+        return finalize_create_assertion (f, self.caller, assertion);
     }
-    async function finalize_create_assertion(f: Future, sender: address, id: field, assertion: Assertion) {
+    async function finalize_create_assertion(f: Future, sender: address, assertion: Assertion) {
+        assert_eq(Mapping::get_or_use(asserters, assertion.id, ZERO_ADDRESS), ZERO_ADDRESS); // assertion does not exist yet
         f.await();
-
-        Mapping::set(asserters, id, sender);
-        Mapping::set(confirm_votes, id, 0u64); // no confirmations yet
-        Mapping::set(dispute_votes, id, 0u64); // no disputes yet
+        Mapping::set(asserters, assertion.id, sender);
+        Mapping::set(confirm_votes, assertion.id, 0u64); // no confirmations yet
+        Mapping::set(dispute_votes, assertion.id, 0u64); // no disputes yet
 
         Mapping::set(fees_collected, 0u8, Mapping::get_or_use(fees_collected, 0u8, 0u128) + assertion.cost * ASSERTER_PROTOCOL_FEE_PER1000 / 1000u128);
     }
@@ -125,14 +122,13 @@ program dark_optimistic_oracle.aleo {
         return finalize_dispute_assertion(f, self.caller, assertion_id, assertion_cost);
     }
     async function finalize_dispute_assertion(f: Future, sender: address, assertion_id: field, assertion_cost: u128) {
-        f.await();
-
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert(assertion.cost == assertion_cost);
         assert(assertion.dispute_deadline_block_height <= block.height);
         assert_eq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS);
-
+        f.await();
         Mapping::set(disputers, assertion_id, sender);
+        // No fee is collected by the protocol for disputes.
     }
 
     // Create a new ticket to vote with.
@@ -150,9 +146,9 @@ program dark_optimistic_oracle.aleo {
         ); 
     }
     async function finalize_new_voting_right(f: Future, sender: address, assertion_id: field, voter_fee: u128) {
-        f.await();
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert_eq(assertion.voter_fee, voter_fee); // !!! Check if this revert also reverts the spending of the records in the transition!!!
+        f.await();
     }
 
     // Vote privately to agree with a proposal.
@@ -198,13 +194,13 @@ program dark_optimistic_oracle.aleo {
         );
     }
     async function finalize_collect_voting_award(f: Future, award_amount: u128, assertion_id: field, outcome: bool) {
-        f.await();
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert(assertion.voting_deadline_block_height > block.height);
         let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
         let n: u64 = Mapping::get_or_use(dispute_votes, assertion_id, 0u64);
         assert(outcome ? y > n : y <=n); // Otherwise revert
         assert(award_amount == assertion.voter_fee * VOTER_REWARD_PER1000 / 1000u128);
+        f.await();
     }
 
     async transition refund_voting_right(private refund_amount: u128, private v: VotingRight) -> (token_registry.aleo/Token, Future) {
@@ -216,18 +212,17 @@ program dark_optimistic_oracle.aleo {
         );
     }
     async function finalize_refund_voting_right(f: Future, refund_amount: u128, assertion_id: field) {
-        f.await();
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert(assertion.voting_deadline_block_height > block.height);
         assert(refund_amount == assertion.voter_fee);
+        f.await();
     }
 
-    async transition collect_assertion_cost(private assertion_cost: u128, public assertion_id: field) -> (Future) {
-        let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, assertion_cost * (1000u128 - ASSERTER_PROTOCOL_FEE_PER1000) / 1000u128, 0u32);
+    async transition collect_assertion_cost(private assertion_cost: u128, public assertion_id: field) -> Future {
+        let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, assertion_cost * (1000u128 - ASSERTER_PROTOCOL_FEE_PER1000) / 1000u128, 0u32); // Asserter deposit - fee
         return finalize_collect_assertion_cost(f, assertion_cost, assertion_id);
     }
     async function finalize_collect_assertion_cost(f: Future, assertion_cost: u128, assertion_id: field) {
-        f.await();
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert_eq(assertion_cost, assertion.cost);
         let asserter: address = Mapping::get(asserters, assertion_id);
@@ -235,14 +230,14 @@ program dark_optimistic_oracle.aleo {
         let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
         let n: u64 = Mapping::get_or_use(dispute_votes, assertion_id, 0u64);
         assert(disputer == ZERO_ADDRESS || y > n);
+        f.await();
     }
 
-    async transition collect_dispute_award(private assertion_cost: u128, public assertion_id: field) -> (Future) {
-        let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, assertion_cost * (2000u128 - ASSERTER_PROTOCOL_FEE_PER1000) / 1000u128, 0u32);
+    async transition collect_dispute_award(private assertion_cost: u128, public assertion_id: field) -> Future {
+        let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, assertion_cost * (2000u128 - ASSERTER_PROTOCOL_FEE_PER1000) / 1000u128, 0u32); // Asserter deposit - fee + Disputer deposit
         return finalize_collect_dispute_award(f, assertion_cost, assertion_id);
     }
     async function finalize_collect_dispute_award(f: Future, assertion_cost: u128, assertion_id: field) {
-        f.await();
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert_eq(assertion_cost, assertion.cost);
         assert(assertion.voting_deadline_block_height > block.height);
@@ -251,18 +246,20 @@ program dark_optimistic_oracle.aleo {
         let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
         let n: u64 = Mapping::get_or_use(dispute_votes, assertion_id, 0u64);
         assert(disputer == ZERO_ADDRESS || y <= n);
+        f.await();
     }
 
-    async transition collect_protocol_fees(public fees_amount: u128) -> (Future) {
+    async transition collect_protocol_fees(public fees_amount: u128) -> Future {
         let f: Future = token_registry.aleo/mint_public(DOOR_TOKEN_ID, self.caller, fees_amount, 0u32);
         return finalize_collect_protocol_fees(f, fees_amount, self.caller);
     }
     async function finalize_collect_protocol_fees(f: Future, fees_amount: u128, caller: address) {
-        f.await();
-        let fees: u128 = Mapping::get_or_use(fees_collected, 0u8, 0u128);
-        Mapping::set(fees_collected, 0u8, 0u128);
-
         let o: address = Mapping::get(fee_collector, 0u8); // may fail in case contract is not initialized;
         assert_eq(caller, o);
+
+        let fees_coll: u128 = Mapping::get_or_use(fees_collected, 0u8, 0u128);
+        assert(fees_amount <= fees_coll);
+        Mapping::set(fees_collected, 0u8, fees_coll-fees_amount);
+        f.await();
     }
 }
