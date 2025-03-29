@@ -157,6 +157,10 @@ leo run transfer_public_to_private $DOOR aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjl
 leo execute transfer_public_to_private $DOOR aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
 
+Note that we can see the resulting records using (from the top folder):
+```zsh
+```
+
 ### Create an assertion
 
 ### Dispute the assertion
