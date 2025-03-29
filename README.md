@@ -2,7 +2,7 @@
 
 ## How to deploy and run locally
 
-Clone this repository (`git@github.com:dark-optimistic-oracle/core.git`) and `git@github.com:dark-optimistic-oracle/token_registry_workaround.git`.
+Clone this repository (`git@github.com:dark-optimistic-oracle/core.git`) and `git@github.com:dark-optimistic-oracle/token-registry-workaround.git`.
 
 In one zsh terminal run the following:
 ```zsh

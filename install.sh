@@ -6,7 +6,7 @@ set -x
 
 . ./.env
 
-pushd ../token_registry_workaround
+pushd ../token-registry-workaround
 ./install.sh
 popd
 leo deploy --yes --path . --network $NETWORK --endpoint $ENDPOINT --private-key $PRIVATE_KEY

@@ -131,7 +131,7 @@ leo execute transfer_public $DOOR aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk5
 while the voters will get 1 private DOOR balance (from the top folder):
 ```zsh
 . ./.env
-leo run transfer_public_to_private $DOOR aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u128 false --path ../token_registry_workaround --network $NETWORK
+leo run transfer_public_to_private $DOOR aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u128 false --path ../token-registry-workaround --network $NETWORK
 leo execute transfer_public_to_private $DOOR aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
 note the resulting output records:
@@ -148,7 +148,7 @@ note the resulting output records:
 and for the remaining two voters (from the top folder):
 ```zsh
 . ./.env
-leo run transfer_public_to_private $DOOR aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u128 false --path ../token_registry_workaround --network $NETWORK
+leo run transfer_public_to_private $DOOR aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u128 false --path ../token-registry-workaround --network $NETWORK
 leo execute transfer_public_to_private $DOOR aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
 and
