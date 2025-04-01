@@ -8,6 +8,10 @@ In one zsh terminal run the following:
 ```zsh
 amareleo-chain start
 ```
+or to keep state across runs run:
+```zsh
+amareleo-chain start  --keep-state
+```
 
 To install:
 ```zsh

@@ -116,11 +116,11 @@ and how much in DOOR tokens (from the `cli` folder):
 
 Let's give one Aleo credit to each of the participants' accounts (from the top folder):
 ```zsh
-leo execute transfer_public aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca 1_000_000u64 --program credits.aleo  --broadcast --yes
-leo execute transfer_public aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52 1_000_000u64 --program credits.aleo  
-leo execute transfer_public aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u64 --program credits.aleo  
-leo execute transfer_public aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u64 --program credits.aleo  
-leo execute transfer_public aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u64 --program credits.aleo  
+leo execute transfer_public aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u64 --program credits.aleo --broadcast --yes
 ```
 as well as DOOR tokens. The Asserter and Disputer need 100 public DOOR balance (from the top folder):
 ```zsh
@@ -128,49 +128,140 @@ as well as DOOR tokens. The Asserter and Disputer need 100 public DOOR balance (
 leo execute transfer_public $DOOR aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca 100_000_000u128 --program token_registry.aleo  --broadcast --yes
 leo execute transfer_public $DOOR aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52 100_000_000u128 --program token_registry.aleo  --broadcast --yes
 ```
-while the voters will get 1 private DOOR balance (from the top folder):
+while the voters will get 1 private DOOR balance. For Voter 1 (from the top folder):
 ```zsh
 . ./.env
-leo run transfer_public_to_private $DOOR aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u128 false --path ../token-registry-workaround --network $NETWORK
 leo execute transfer_public_to_private $DOOR aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
-note the resulting output records:
-```
-{
-  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,
-  amount: 1000000u128.private,
-  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,
-  external_authorization_required: false.private,
-  authorized_until: 4294967295u32.private,
-  _nonce: 4253569419940868305251102180799951044840173323847451590038166426021035296678group.public
-}
-```
-and for the remaining two voters (from the top folder):
+To see this record:
 ```zsh
-. ./.env
-leo run transfer_public_to_private $DOOR aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u128 false --path ../token-registry-workaround --network $NETWORK
+snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+```
+showing the record:
+```
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 3662617502716024984191204143354475946135360656935981529602732280610362138649group.public}
+```
+for Voter 2  (from the top folder):
+```zsh
 leo execute transfer_public_to_private $DOOR aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
-and
+To see this record:
+```zsh
+snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
 ```
-leo run transfer_public_to_private $DOOR aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u128 false --path ../token_registry_workaround --network $NETWORK
+showing the record:
+```
+{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 7436919775129778827797110222871323145238176154282216336930881428798799390657group.public}
+```
+and for Voter 2  (from the top folder):
+```
 leo execute transfer_public_to_private $DOOR aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
-
-Note that we can see the resulting records using (from the top folder):
+To see this record:
 ```zsh
+snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+```
+showing the record:
+```
+{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public}
 ```
 
 ### Create an assertion
 
+The Asserter creates an assertion (from the `cli` folder):
+```zsh
+./assertion.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6 123field 456field 789field 100_000_000u128 1_000_000u128 3 10
+```
+
 ### Dispute the assertion
+
+Before the deadline to dispute, the Disputer can dispute the above assertion:
+```zsh
+./dispute.sh --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt 123field 100_000_000u128
+```
 
 ### Vote on the assertion
 
-### Get the voting result
+Each voter has to execute the following steps:
+- Purchase a Voting Right
+- Vote (either Confirm or Deny)
+- Collect the voting award
+- Get refund for the Voting Right in case it was not used (did not vote) by the deadline
+
+#### Purchase Voting Right
+
+Voter 1 can first pay to obtain a voting right:
+```zsh
+./voting_right.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+  "{\
+    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
+    amount: 1_000_000u128.private,\
+    token_id: ${DOOR}.private,\
+    external_authorization_required: false.private,\
+    authorized_until: 0u32.private,\
+    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
+  }"\
+  123field 1_000_000u128
+```
+
+#### Vote
+
+To confirm the assertion:
+```zsh
+./confirm.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+  "{\
+    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
+    assertion_id: 123field.private,\
+    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
+  }"
+```
+
+To deny the assertion:
+```zsh
+./deny.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+  "{\
+    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
+    assertion_id: 123field.private,\
+    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
+  }"
+```
+
+### See the voting result
 
 ### Asserter or Disputer collects award
 
 ### Voter collect awards
+
+The voter can either collect the award for timely correct voting or get a refund for the Voting Right that was not used.
+
+#### Collect voting award
+
+If the Voter voted on time, they can collect the award for the correct voting. If the vote was not correct
+there is nothing to collect, so the collection would yield a private DOOR Token in the amount of 0.
+
+We have to pre-calculate the amount of the award, which is $1,000,000 * (100 + 1) / 100 = 1,010,000
+
+```zsh
+./voter_collect.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+  "{\
+    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
+    assertion_id: 123field.private,\
+    outcome: true.private,\
+    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
+  }"\
+  1010000u128
+```
+
+#### Get Refund for unused Voting Right
+
+If the voter did not vote on time they can get a refund for the Voting Right.
+
+### See the voting result
+
+We can see the voting result as follows:
+
+#### Asserter collects partial refund
+
+#### Disputer collects refund and reward
 
 ### Protocol collects fees
