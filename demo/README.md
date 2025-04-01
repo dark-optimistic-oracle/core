@@ -243,13 +243,13 @@ We have to pre-calculate the amount of the award, which is $1,000,000 * (100 + 1
 
 ```zsh
 ./voter_collect.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+  1010000u128\
   "{\
     owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
     assertion_id: 123field.private,\
     outcome: true.private,\
     _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
-  }"\
-  1010000u128
+  }"
 ```
 
 #### Get Refund for unused Voting Right
