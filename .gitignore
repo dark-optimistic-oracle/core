@@ -6,3 +6,4 @@ outputs/
 build/
 **/.amareleo*/**
 temp
+**/.DS_Store
