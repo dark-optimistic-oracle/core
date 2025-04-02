@@ -38,7 +38,9 @@ fi
 
 # snarkos developer execute\
 #     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
-snarkos developer execute\
-    --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
-    dark_optimistic_oracle.aleo confirm\
-    $1
+# snarkos developer execute\
+#     --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
+#     dark_optimistic_oracle.aleo confirm\
+#     $1
+leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
+    dark_optimistic_oracle.aleo confirm $1

@@ -42,7 +42,9 @@ echo "Payment: $1"
 
 # snarkos developer execute\
 #     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
-snarkos developer execute\
-    --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
-    dark_optimistic_oracle.aleo new_voting_right\
-    $1 $2 $3
+# snarkos developer execute\
+#     --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
+#     dark_optimistic_oracle.aleo new_voting_right\
+#     $1 $2 $3
+leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
+    new_voting_right $1 $2 $3
