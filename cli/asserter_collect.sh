@@ -15,7 +15,6 @@ else
     exit 1
 fi
 
-#private award_amount: u128, private r: VotingReceipt
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "Usage: $0 [--private-key <key>] <payment> <id> <voter_fee>"
