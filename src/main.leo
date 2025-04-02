@@ -125,6 +125,7 @@ program dark_optimistic_oracle.aleo {
         Mapping::set(confirm_votes, assertion.id, 0u64); // no confirmations yet
         Mapping::set(dispute_votes, assertion.id, 0u64); // no disputes yet
 
+        Mapping::set(assertions, assertion.id, assertion); // store the assertion
         Mapping::set(fees_collected, 0u8, Mapping::get_or_use(fees_collected, 0u8, 0u128) + assertion.cost * ASSERTER_PROTOCOL_FEE_PER1000 / 1000u128);
     }
 
