@@ -20,8 +20,7 @@ fi
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "Usage: $0 [--private-key <key>] <payment> <id> <voter_fee>"
     echo "  --private-key: Optional private key for signing (string)"
-    echo "  award_amount: The amount of the award (u128)"
-    echo "  voting_receipt: VotingReceipt record"
+    echo "  amount: The amount to be collected (in DOOR tokens) (u128)"
     exit 0
 fi
 
@@ -32,7 +31,7 @@ if [[ "$1" == "--private-key" ]]; then
 fi
 
 # Parameter validation
-if [[ $# -eq 0 ]] || [[ $# -gt 4 ]]; then
+if [[ $# -eq 0 ]] || [[ $# -gt 3 ]]; then
     echo "Error: Invalid number of parameters"
     echo "Use --help for usage information"
     exit 1
@@ -42,5 +41,5 @@ fi
 #     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
 snarkos developer execute\
     --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
-    dark_optimistic_oracle.aleo collect_voting_award\
-    $1 $2
+    dark_optimistic_oracle.aleo collect_protocol_fees\
+    $1

@@ -20,8 +20,8 @@ fi
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "Usage: $0 [--private-key <key>] <payment> <id> <voter_fee>"
     echo "  --private-key: Optional private key for signing (string)"
-    echo "  award_amount: The amount of the award (u128)"
-    echo "  voting_receipt: VotingReceipt record"
+    echo "  cost: The cost of the assertion (in DOOR tokens) (u128)"
+    echo "  id: The ID of the assertion (field)"
     exit 0
 fi
 
@@ -42,5 +42,5 @@ fi
 #     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
 snarkos developer execute\
     --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
-    dark_optimistic_oracle.aleo collect_voting_award\
+    dark_optimistic_oracle.aleo collect_dispute_award\
     $1 $2

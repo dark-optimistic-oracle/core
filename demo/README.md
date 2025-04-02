@@ -254,14 +254,45 @@ We have to pre-calculate the amount of the award, which is $1,000,000 * (100 + 1
 
 #### Get Refund for unused Voting Right
 
-If the voter did not vote on time they can get a refund for the Voting Right.
+If the voter did not vote on time they can get a refund for the Voting Right:
+
+```zsh
+./voter_refund.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+  1000000u128\
+  "{\
+    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
+    assertion_id: 123field.private,\
+    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
+  }"
+```
 
 ### See the voting result
 
 We can see the voting result as follows:
+```zsh
+leo quey program dark_optimisticOracle.aleo --mapping-values assertions 123field
+```
 
 #### Asserter collects partial refund
 
+If the assertion is not disputed or voted as correct:
+
+```zsh
+./asserter_collect.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6 100_000_000u128 123field
+```
+
 #### Disputer collects refund and reward
 
+If the assertion is disputed and voted as incorrect:
+
+```zsh
+./disputer_collect.sh --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt 100_000_000u128 123field
+```
+
 ### Protocol collects fees
+
+At any time the protocol can collect any part of the the fees accrued:
+
+```zsh
+./protocol_collect.sh 1_000u128
+```
