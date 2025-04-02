@@ -16,6 +16,8 @@ program dark_optimistic_oracle.aleo {
 
     mapping fee_collector: u8 => address; // owner (fee collector) of the contract stored in the 0-th index
 
+    mapping current_mock_block_height: u8 => u32; // mock block height for testing purposes stored in the 0-th index
+
     // Assertion details - all public
     struct Assertion {
         id: field,
@@ -99,6 +101,14 @@ program dark_optimistic_oracle.aleo {
         f2.await();
     }
 
+    // This is only for testing purposes. Remove in the production version!!!
+    async transition mock_block_height(public height: u32) -> Future {
+        return finalize_mock_block_height(height);
+    }
+    async function finalize_mock_block_height(height: u32) {
+        let current: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32);
+        Mapping::set(current_mock_block_height, 0u8, height + current);
+    }
 
     // Propose a new proposal to vote on.
     // Anyone can make an assertion.
@@ -126,7 +136,8 @@ program dark_optimistic_oracle.aleo {
     async function finalize_dispute_assertion(f: Future, sender: address, assertion_id: field, assertion_cost: u128) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert(assertion.cost == assertion_cost);
-        assert(assertion.dispute_deadline_block_height <= block.height);
+        let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32); // assertion must exist
+        assert(assertion.dispute_deadline_block_height <= block.height+mock);
         assert_eq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS);
         f.await();
         Mapping::set(disputers, assertion_id, sender);
@@ -164,7 +175,8 @@ program dark_optimistic_oracle.aleo {
     async function finalize_confirm(assertion_id: field) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert_neq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS); // Must be disputed;
-        assert(assertion.voting_deadline_block_height <= block.height);
+        let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32); // assertion must exist
+        assert(assertion.voting_deadline_block_height <= block.height+mock);
         // Publicly increment the number of agree votes.
         let current: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
         Mapping::set(confirm_votes, assertion_id, current + 1u64);
@@ -181,7 +193,8 @@ program dark_optimistic_oracle.aleo {
     async function finalize_deny(assertion_id: field) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert_neq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS); // Must be disputed;
-        assert(assertion.voting_deadline_block_height <= block.height);
+        let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32); // assertion must exist
+        assert(assertion.voting_deadline_block_height <= block.height+mock);
         // Publicly increment the number of disagree votes.
         let current: u64 = Mapping::get_or_use(dispute_votes, assertion_id, 0u64);
         Mapping::set(dispute_votes, assertion_id, current + 1u64);
@@ -197,7 +210,8 @@ program dark_optimistic_oracle.aleo {
     }
     async function finalize_collect_voting_award(f: Future, award_amount: u128, assertion_id: field, outcome: bool) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
-        assert(assertion.voting_deadline_block_height > block.height);
+        let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32); // assertion must exist
+        assert(assertion.voting_deadline_block_height > block.height+mock);
         let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
         let n: u64 = Mapping::get_or_use(dispute_votes, assertion_id, 0u64);
         assert(outcome ? y > n : y <=n); // Otherwise revert
@@ -215,7 +229,8 @@ program dark_optimistic_oracle.aleo {
     }
     async function finalize_refund_voting_right(f: Future, refund_amount: u128, assertion_id: field) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
-        assert(assertion.voting_deadline_block_height > block.height);
+        let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32); // assertion must exist
+        assert(assertion.voting_deadline_block_height > block.height+mock);
         assert(refund_amount == assertion.voter_fee);
         f.await();
     }
@@ -242,7 +257,8 @@ program dark_optimistic_oracle.aleo {
     async function finalize_collect_dispute_award(f: Future, assertion_cost: u128, assertion_id: field) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert_eq(assertion_cost, assertion.cost);
-        assert(assertion.voting_deadline_block_height > block.height);
+        let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32); // assertion must exist
+        assert(assertion.voting_deadline_block_height > block.height+mock);
         let asserter: address = Mapping::get(asserters, assertion_id);
         let disputer: address = Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS);
         let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
