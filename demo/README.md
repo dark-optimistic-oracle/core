@@ -139,7 +139,7 @@ snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8Fh
 ```
 showing the record:
 ```
-{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 3662617502716024984191204143354475946135360656935981529602732280610362138649group.public}
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 5319321441263959059251305057938094924841085174442736432944268906531671221783group.public}
 ```
 for Voter 2  (from the top folder):
 ```zsh
@@ -151,9 +151,9 @@ snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmX
 ```
 showing the record:
 ```
-{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 7436919775129778827797110222871323145238176154282216336930881428798799390657group.public}
+{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 111006849227671898419659765302079453718754185392206007143824097700737631363group.public}
 ```
-and for Voter 2  (from the top folder):
+and for Voter 3  (from the top folder):
 ```
 leo execute transfer_public_to_private $DOOR aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
@@ -163,14 +163,14 @@ snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9
 ```
 showing the record:
 ```
-{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public}
+{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 7512143912580327156284581048931072449959635276247039811715262197063698248737group.public}
 ```
 
 ### Create an assertion
 
 The Asserter creates an assertion (from the `cli` folder):
 ```zsh
-./assertion.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6 123field 456field 789field 100_000_000u128 1_000_000u128 3 10
+./assertion.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6 123field 456field 789field 100_000_000u128 1_000_000u128 10000 20000
 ```
 
 ### Dispute the assertion

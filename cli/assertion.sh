@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-#set -x
+set -x
 
 cd ..
 . ./.env
@@ -50,9 +50,7 @@ BLOCK_HEIGHT=$(echo $BLOCK_HEIGHT | grep -oE '[0-9]+$')
 DISPUTE_DEADLINE_BLOCKS=$((BLOCK_HEIGHT + $6))
 VOTING_DEADLINE_BLOCKS=$((BLOCK_HEIGHT + $7))
 
-# snarkos developer execute\
-#     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
 snarkos developer execute\
-    --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
+    --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
     dark_optimistic_oracle.aleo create_assertion\
     "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_fee: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
