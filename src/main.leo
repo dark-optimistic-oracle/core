@@ -216,7 +216,7 @@ program dark_optimistic_oracle.aleo {
         let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
         let n: u64 = Mapping::get_or_use(dispute_votes, assertion_id, 0u64);
         assert(outcome ? y > n : y <=n); // Otherwise revert
-        assert(award_amount == assertion.voter_fee * VOTER_REWARD_PER1000 / 1000u128);
+        assert(award_amount == assertion.voter_fee * (1000u128 + VOTER_REWARD_PER1000) / 1000u128);
         f.await();
     }
 
