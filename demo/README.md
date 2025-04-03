@@ -139,7 +139,7 @@ snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8Fh
 ```
 showing the record:
 ```
-{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 5319321441263959059251305057938094924841085174442736432944268906531671221783group.public}
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 6092763807735359760082742261141380714949175532669255101053885517635558089763group.public}
 ```
 for Voter 2  (from the top folder):
 ```zsh
@@ -151,7 +151,7 @@ snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmX
 ```
 showing the record:
 ```
-{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 111006849227671898419659765302079453718754185392206007143824097700737631363group.public}
+{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 4660762210625602531454667715716788873930822326021351463201401776960538974731group.public}
 ```
 and for Voter 3  (from the top folder):
 ```
@@ -163,7 +163,7 @@ snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9
 ```
 showing the record:
 ```
-{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 7512143912580327156284581048931072449959635276247039811715262197063698248737group.public}
+{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 1196875215099105445183303016816661450454541220211036039050633660401631772186group.public}
 ```
 
 ### Create an assertion
@@ -175,7 +175,7 @@ The Asserter creates an assertion (from the `cli` folder):
 
 ### Dispute the assertion
 
-Before the deadline to dispute, the Disputer can dispute the above assertion:
+Before the deadline to dispute, the Disputer can dispute the above assertion (from the `cli` folder):
 ```zsh
 ./dispute.sh --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt 123field 100_000_000u128
 ```
@@ -190,45 +190,128 @@ Each voter has to execute the following steps:
 
 #### Purchase Voting Right
 
-Voter 1 can first pay to obtain a voting right:
+Voter 1 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
 ./voting_right.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
-  "{\
-    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
-    amount: 1_000_000u128.private,\
-    token_id: ${DOOR}.private,\
-    external_authorization_required: false.private,\
-    authorized_until: 0u32.private,\
-    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
-  }"\
+  "<payment>"\
   123field 1_000_000u128
+```
+# ERROR: Status code 500
+and check:
+```
+snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+```
+which yields a the VotingRight record:
+```
+```
+
+Voter 2 can first pay to obtain a voting right (from the `cli` folder):
+```zsh
+./voting_right.sh --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT\
+  "<payment>"\
+  123field 1_000_000u128
+```
+
+and check:
+```
+snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
+```
+which yields a the VotingRight record:
+```
+```
+
+Voter 3 can first pay to obtain a voting right (from the `cli` folder):
+```zsh
+./voting_right.sh --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE\
+  "<payment>"\
+  123field 1_000_000u128
+```
+
+and check:
+```
+snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+```
+which yields a the VotingRight record:
+```
 ```
 
 #### Vote
 
-To confirm the assertion:
+Voter 1 will confirm the assertion (from the `cli` folder):
 ```zsh
 ./confirm.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
-  "{\
-    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
-    assertion_id: 123field.private,\
-    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
-  }"
+  "<voting_right>"
+```
+and check:
+```
+snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+```
+which yields a the VotingReceipt record:
+```
 ```
 
-To deny the assertion:
+Voter 2 will confirm the assertion (from the `cli` folder):
 ```zsh
-./deny.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
-  "{\
-    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
-    assertion_id: 123field.private,\
-    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
-  }"
+./confirm.sh --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT\
+  "<voting_right>"
+```
+and check:
+```
+snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
+```
+which yields a the VotingReceipt record:
+```
+```
+
+Voter 3 will deny the assertion (from the `cli` folder):
+```zsh
+./deny.sh --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE\
+  "<voting_right>"
+```
+and check:
+```
+snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+```
+which yields a the VotingReceipt record:
+```
 ```
 
 ### See the voting result
 
+Let's mock the block height to simulate time advance. This is only for testing purposes. In production, we would have to wait for the
+dispute deadline to be reached (from the `cli` folder):
+```zsh
+./mock_block.sh 20000
+```
+
 ### Asserter or Disputer collects award
+
+Since the asserter is right, he can collect the refund (from the `cli` folder):
+```zsh
+./asserter_collect.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6\
+  100_000_000u128 123field
+```
+and check:
+```zsh
+snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+```
+which yields the refund record:
+```zsh
+```
+
+If the disputer were right, he would collect the refund and award (from the `cli` folder):
+
+```zsh
+./disputer_collect.sh --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt\
+  100_000_000u128 123field
+```
+and check:
+```zsh
+snarkos developer scan --network 1 --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt --endpoint $ENDPOINT --last 10
+```
+which should yields the refund record, but this time the transaction would fail as the disputer was not right and obtain nothing:
+```zsh
+```
 
 ### Voter collect awards
 
@@ -239,55 +322,63 @@ The voter can either collect the award for timely correct voting or get a refund
 If the Voter voted on time, they can collect the award for the correct voting. If the vote was not correct
 there is nothing to collect, so the collection would yield a private DOOR Token in the amount of 0.
 
-We have to pre-calculate the amount of the award, which is $1,000,000 * (100 + 1) / 100 = 1,010,000
+We have to pre-calculate the amount of the award, which is $1,000,000 * (100 + 1) / 100 = 1,010,000.
 
+Voter 1 can collect (from the `cli` folder):
 ```zsh
 ./voter_collect.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
-  1010000u128\
-  "{\
-    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
-    assertion_id: 123field.private,\
-    outcome: true.private,\
-    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
-  }"
+  1_010_000u128\
+  "<voting_receipt>"
+```
+and check:
+```zsh
+snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+```
+which yields refund and voting award record:
+```zsh
+```
+
+Voter 2 can collect (from the `cli` folder):
+```zsh
+./voter_collect.sh --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT\
+  1_010_000u128\
+  "<voting_receipt>"
+```
+and check:
+```zsh
+snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
+```
+which yields refund and voting award record:
+```zsh
+```
+
+Voter 3 can try to collect (from the `cli` folder):
+```zsh
+./voter_collect.sh --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE\
+  1_010_000u128\
+  "<voting_receipt>"
+```
+and check:
+```zsh
+snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+```
+which yields nothing for refund and voting award, because of the incorrect voting - he got slashed:
+```zsh
 ```
 
 #### Get Refund for unused Voting Right
 
-If the voter did not vote on time they can get a refund for the Voting Right:
-
+If the voter did not vote on time they can get a refund for the VotingRight (from the `cli` folder):
 ```zsh
 ./voter_refund.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
-  1000000u128\
-  "{\
-    owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,\
-    assertion_id: 123field.private,\
-    _nonce: 8419915732726617122985977566115675398832330706414534111397402875417465794465group.public\
-  }"
+  1_000_000u128\
+  "<voting_receipt>"
 ```
-
-### See the voting result
-
-We can see the voting result as follows:
+and check:
 ```zsh
-leo quey program dark_optimisticOracle.aleo --mapping-values assertions 123field
+snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
 ```
-
-#### Asserter collects partial refund
-
-If the assertion is not disputed or voted as correct:
-
-```zsh
-./asserter_collect.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6 100_000_000u128 123field
-```
-
-#### Disputer collects refund and reward
-
-If the assertion is disputed and voted as incorrect:
-
-```zsh
-./disputer_collect.sh --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt 100_000_000u128 123field
-```
+but obviously, since Voter 1 actually voted, he cannot get a refund.
 
 ### Protocol collects fees
 
@@ -296,3 +387,11 @@ At any time the protocol can collect any part of the the fees accrued:
 ```zsh
 ./protocol_collect.sh 1_000u128
 ```
+and see the new balance:
+```zsh
+./authorized_balance.sh aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px
+```
+showing:
+```
+```
+
