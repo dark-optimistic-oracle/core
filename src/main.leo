@@ -156,10 +156,10 @@ program dark_optimistic_oracle.aleo {
         return (
             VotingRight {owner: sender.owner, assertion_id},
             change,
-            finalize_new_voting_right(f, sender.owner, assertion_id, voter_fee)
+            finalize_new_voting_right(f, assertion_id, voter_fee)
         ); 
     }
-    async function finalize_new_voting_right(f: Future, sender: address, assertion_id: field, voter_fee: u128) {
+    async function finalize_new_voting_right(f: Future, assertion_id: field, voter_fee: u128) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         assert_eq(assertion.voter_fee, voter_fee); // !!! Check if this revert also reverts the spending of the records in the transition!!!
         f.await();
