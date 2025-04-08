@@ -4,7 +4,8 @@ The full workflow of the protocol is described and tried.
 
 ## Accounts and Roles
 
-Let's set up several roles and accounts for them:
+Let's set up several roles and accounts for them. Let's then modify the `.env` file to contain these private keys and addresses (PROTOCOL_PK, PROTOCOL, 
+ASSERTER_PK, ASSERTER, DISPUTER_PK, DISPUTER, VOTER_1_PK, VOTER_1, VOTER_2_PK, VOTER_2, VOTER_3_PK, VOTER_3):
 
 ### Owner
 
@@ -106,78 +107,78 @@ For that, each account will need some Aleo credits, and some DOOR tokens.
 
 We can see how much the Owner account has in Aleo credits:
 ```zsh
-leo query program credits.aleo --mapping-value account aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px
+leo query program credits.aleo --mapping-value account $PROTOCOL
 ```
 
 and how much in DOOR tokens (from the `cli` folder):
 ```zsh
-./authorized_balance.sh aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px 
+./authorized_balance.sh $PROTOCOL 
 ```
 
 Let's give one Aleo credit to each of the participants' accounts (from the top folder):
 ```zsh
-leo execute transfer_public aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca 1_000_000u64 --program credits.aleo --broadcast --yes
-leo execute transfer_public aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52 1_000_000u64 --program credits.aleo --broadcast --yes
-leo execute transfer_public aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u64 --program credits.aleo --broadcast --yes
-leo execute transfer_public aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u64 --program credits.aleo --broadcast --yes
-leo execute transfer_public aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public $ASSERTER 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public $DISPUTER 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public $VOTER_1 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public $VOTER_2 1_000_000u64 --program credits.aleo --broadcast --yes
+leo execute transfer_public $VOTER_3 1_000_000u64 --program credits.aleo --broadcast --yes
 ```
 as well as DOOR tokens. The Asserter and Disputer need 100 public DOOR balance (from the top folder):
 ```zsh
 . ./.env
-leo execute transfer_public $DOOR aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca 100_000_000u128 --program token_registry.aleo  --broadcast --yes
-leo execute transfer_public $DOOR aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52 100_000_000u128 --program token_registry.aleo  --broadcast --yes
+leo execute transfer_public $DOOR $ASSERTER 100_000_000u128 --program token_registry.aleo  --broadcast --yes
+leo execute transfer_public $DOOR $DISPUTER 100_000_000u128 --program token_registry.aleo  --broadcast --yes
 ```
 while the voters will get 1 private DOOR balance. For Voter 1 (from the top folder):
 ```zsh
 . ./.env
-leo execute transfer_public_to_private $DOOR aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
+leo execute transfer_public_to_private $DOOR $VOTER_1 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
 To see this record:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 showing the record:
 ```
-{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 6092763807735359760082742261141380714949175532669255101053885517635558089763group.public}
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 2844964691049150336816418698272453117737065199382451050143897709194254851008group.public}
 ```
 for Voter 2  (from the top folder):
 ```zsh
-leo execute transfer_public_to_private $DOOR aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
+leo execute transfer_public_to_private $DOOR $VOTER_2 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
 To see this record:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 showing the record:
 ```
-{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 4660762210625602531454667715716788873930822326021351463201401776960538974731group.public}
+{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 6469263839186893216716018505128292796801782977677577314369432707056710293830group.public}
 ```
 and for Voter 3  (from the top folder):
 ```
-leo execute transfer_public_to_private $DOOR aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
+leo execute transfer_public_to_private $DOOR $VOTER_3 1_000_000u128 false --program token_registry.aleo  --broadcast --yes
 ```
 To see this record:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 showing the record:
 ```
-{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 1196875215099105445183303016816661450454541220211036039050633660401631772186group.public}
+{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 5435035154732887285519184900581219846165669191489774863943030320053394312647group.public}
 ```
 
 ### Create an assertion
 
 The Asserter creates an assertion (from the `cli` folder):
 ```zsh
-./assertion.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6 123field 456field 789field 100_000_000u128 1_000_000u128 10000 20000
+./assertion.sh --private-key $ASSERTER_PK 123field 456field 789field 100_000_000u128 1_000_000u128 10000 20000
 ```
 
 ### Dispute the assertion
 
 Before the deadline to dispute, the Disputer can dispute the above assertion (from the `cli` folder):
 ```zsh
-./dispute.sh --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt 123field 100_000_000u128
+./dispute.sh --private-key $DISPUTER_PK 123field 100_000_000u128
 ```
 
 ### Vote on the assertion
@@ -192,14 +193,14 @@ Each voter has to execute the following steps:
 
 Voter 1 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
-./voting_right.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
-  "<payment>"\
+./voting_right.sh --private-key $VOTER_1_PK\
+  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 2844964691049150336816418698272453117737065199382451050143897709194254851008group.public}"\
   123field 1_000_000u128
 ```
 # ERROR: Status code 500
 and check:
 ```
-snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingRight record:
 ```
@@ -207,14 +208,14 @@ which yields a the VotingRight record:
 
 Voter 2 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
-./voting_right.sh --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT\
+./voting_right.sh --private-key $VOTER_2_PK\
   "<payment>"\
   123field 1_000_000u128
 ```
 
 and check:
 ```
-snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingRight record:
 ```
@@ -222,14 +223,14 @@ which yields a the VotingRight record:
 
 Voter 3 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
-./voting_right.sh --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE\
+./voting_right.sh --private-key $VOTER_3_PK\
   "<payment>"\
   123field 1_000_000u128
 ```
 
 and check:
 ```
-snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingRight record:
 ```
@@ -239,12 +240,12 @@ which yields a the VotingRight record:
 
 Voter 1 will confirm the assertion (from the `cli` folder):
 ```zsh
-./confirm.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+./confirm.sh --private-key $VOTER_1_PK\
   "<voting_right>"
 ```
 and check:
 ```
-snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingReceipt record:
 ```
@@ -252,12 +253,12 @@ which yields a the VotingReceipt record:
 
 Voter 2 will confirm the assertion (from the `cli` folder):
 ```zsh
-./confirm.sh --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT\
+./confirm.sh --private-key $VOTER_2_PK\
   "<voting_right>"
 ```
 and check:
 ```
-snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingReceipt record:
 ```
@@ -265,12 +266,12 @@ which yields a the VotingReceipt record:
 
 Voter 3 will deny the assertion (from the `cli` folder):
 ```zsh
-./deny.sh --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE\
+./deny.sh --private-key $VOTER_3_PK\
   "<voting_right>"
 ```
 and check:
 ```
-snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingReceipt record:
 ```
@@ -288,12 +289,12 @@ dispute deadline to be reached (from the `cli` folder):
 
 Since the asserter is right, he can collect the refund (from the `cli` folder):
 ```zsh
-./asserter_collect.sh --private-key APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6\
+./asserter_collect.sh --private-key $ASSERTER_PK\
   100_000_000u128 123field
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $ASSERTER_PK --endpoint $ENDPOINT --last 10
 ```
 which yields the refund record:
 ```zsh
@@ -302,12 +303,12 @@ which yields the refund record:
 If the disputer were right, he would collect the refund and award (from the `cli` folder):
 
 ```zsh
-./disputer_collect.sh --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt\
+./disputer_collect.sh --private-key $DISPUTER_PK\
   100_000_000u128 123field
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DISPUTER_PK --endpoint $ENDPOINT --last 10
 ```
 which should yields the refund record, but this time the transaction would fail as the disputer was not right and obtain nothing:
 ```zsh
@@ -326,13 +327,13 @@ We have to pre-calculate the amount of the award, which is $1,000,000 * (100 + 1
 
 Voter 1 can collect (from the `cli` folder):
 ```zsh
-./voter_collect.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+./voter_collect.sh --private-key $VOTER_1_PK\
   1_010_000u128\
   "<voting_receipt>"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5 --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 which yields refund and voting award record:
 ```zsh
@@ -340,13 +341,13 @@ which yields refund and voting award record:
 
 Voter 2 can collect (from the `cli` folder):
 ```zsh
-./voter_collect.sh --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT\
+./voter_collect.sh --private-key $VOTER_2_PK\
   1_010_000u128\
   "<voting_receipt>"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 which yields refund and voting award record:
 ```zsh
@@ -354,13 +355,13 @@ which yields refund and voting award record:
 
 Voter 3 can try to collect (from the `cli` folder):
 ```zsh
-./voter_collect.sh --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE\
+./voter_collect.sh --private-key $VOTER_3_PK\
   1_010_000u128\
   "<voting_receipt>"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 which yields nothing for refund and voting award, because of the incorrect voting - he got slashed:
 ```zsh
@@ -370,13 +371,13 @@ which yields nothing for refund and voting award, because of the incorrect votin
 
 If the voter did not vote on time they can get a refund for the VotingRight (from the `cli` folder):
 ```zsh
-./voter_refund.sh --private-key APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5\
+./voter_refund.sh --private-key $VOTER_1_PK\
   1_000_000u128\
   "<voting_receipt>"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 but obviously, since Voter 1 actually voted, he cannot get a refund.
 
@@ -389,7 +390,7 @@ At any time the protocol can collect any part of the the fees accrued:
 ```
 and see the new balance:
 ```zsh
-./authorized_balance.sh aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px
+./authorized_balance.sh $PROTOCOL
 ```
 showing:
 ```
