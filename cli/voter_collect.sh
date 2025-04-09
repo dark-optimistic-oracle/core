@@ -17,9 +17,9 @@ fi
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    echo "Usage: $0 [--private-key <key>] <payment> <id> <voter_fee>"
+    echo "Usage: $0 [--private-key <key>] <amount> <voting_receipt>"
     echo "  --private-key: Optional private key for signing (string)"
-    echo "  award_amount: The amount of the award (u128)"
+    echo "  amount: The anticipated amount of the Voter Stake + Voter Award (u128)"
     echo "  voting_receipt: VotingReceipt record"
     exit 0
 fi

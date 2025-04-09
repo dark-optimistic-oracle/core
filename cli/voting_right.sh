@@ -17,11 +17,11 @@ fi
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    echo "Usage: $0 [--private-key <key>] <payment> <id> <voter_fee>"
+    echo "Usage: $0 [--private-key <key>] <payment> <id> <voter_stake>"
     echo "  --private-key: Optional private key for signing (string)"
     echo "  payment: Token record (token_registry.aleo/Token)"
     echo "  id: The ID of the assertion (field)"
-    echo "  cost: The cost of the assertion (in DOOR tokens) (u128)"
+    echo "  voter_stake: The voter stake amount (in DOOR tokens) (u128)"
     exit 0
 fi
 

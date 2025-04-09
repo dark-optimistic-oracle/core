@@ -17,9 +17,9 @@ fi
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    echo "Usage: $0 [--private-key <key>] <payment> <id> <voter_fee>"
+    echo "Usage: $0 [--private-key <key>] <cost> <id>"
     echo "  --private-key: Optional private key for signing (string)"
-    echo "  cost: The cost of the assertion (in DOOR tokens) (u128)"
+    echo "  cost: The anticipated cost of the assertion (in DOOR tokens) (u128)"
     echo "  id: The ID of the assertion (field)"
     exit 0
 fi
