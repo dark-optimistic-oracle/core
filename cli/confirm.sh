@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-#set -x
+set -x
 
 cd ..
 . ./.env
@@ -43,4 +43,4 @@ fi
 #     dark_optimistic_oracle.aleo confirm\
 #     $1
 leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
-    dark_optimistic_oracle.aleo confirm $1
+    confirm $1

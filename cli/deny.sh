@@ -43,4 +43,4 @@ fi
 #     dark_optimistic_oracle.aleo deny\
 #     $1
 leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
-    dark_optimistic_oracle.aleo deny $1
+    deny $1
