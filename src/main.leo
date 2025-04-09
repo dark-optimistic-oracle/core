@@ -169,7 +169,7 @@ program dark_optimistic_oracle.aleo {
     async transition confirm(private v: VotingRight) -> (VotingReceipt, Future) {
         // Finalize this vote
         return (
-            VotingReceipt { owner: self.caller, assertion_id: v.assertion_id, outcome: true },
+            VotingReceipt { owner: v.owner, assertion_id: v.assertion_id, outcome: true },
             finalize_confirm(v.assertion_id)
         );
     }
@@ -187,7 +187,7 @@ program dark_optimistic_oracle.aleo {
     async transition deny(private v: VotingRight) -> (VotingReceipt, Future) {
         // Finalize this vote.
         return (
-            VotingReceipt { owner: self.caller, assertion_id: v.assertion_id, outcome: false },
+            VotingReceipt { owner: v.owner, assertion_id: v.assertion_id, outcome: false },
             finalize_deny(v.assertion_id)
         );
     }
