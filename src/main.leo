@@ -24,7 +24,7 @@ program dark_optimistic_oracle.aleo {
         title: field,
         content_hash: field,
         cost: u128, // assuming asserter and disputer deposit are the same
-        voter_fee: u128,
+        voter_stake: u128,
         dispute_deadline_block_height: u32,
         voting_deadline_block_height: u32,
     }
@@ -149,19 +149,19 @@ program dark_optimistic_oracle.aleo {
     async transition new_voting_right(
         private payment: token_registry.aleo/Token,
         public assertion_id: field,
-        public voter_fee: u128
+        public voter_stake: u128
     ) -> (VotingRight, token_registry.aleo/Token, Future) {
-        let (change, f): (token_registry.aleo/Token, Future) = token_registry.aleo/burn_private(payment, voter_fee);
+        let (change, f): (token_registry.aleo/Token, Future) = token_registry.aleo/burn_private(payment, voter_stake);
 
         return (
             VotingRight {owner: payment.owner, assertion_id},
             change,
-            finalize_new_voting_right(f, assertion_id, voter_fee)
+            finalize_new_voting_right(f, assertion_id, voter_stake)
         ); 
     }
-    async function finalize_new_voting_right(f: Future, assertion_id: field, voter_fee: u128) {
+    async function finalize_new_voting_right(f: Future, assertion_id: field, voter_stake: u128) {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
-        assert_eq(assertion.voter_fee, voter_fee); // !!! Check if this revert also reverts the spending of the records in the transition!!!
+        assert_eq(assertion.voter_stake, voter_stake); // !!! Check if this revert also reverts the spending of the records in the transition!!!
         f.await();
     }
 
@@ -216,7 +216,7 @@ program dark_optimistic_oracle.aleo {
         let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
         let n: u64 = Mapping::get_or_use(deny_votes, assertion_id, 0u64);
         assert(outcome ? y > n : y <=n); // Otherwise revert
-        assert(award_amount == assertion.voter_fee * (1000u128 + VOTER_REWARD_PER1000) / 1000u128);
+        assert(award_amount == assertion.voter_stake * (1000u128 + VOTER_REWARD_PER1000) / 1000u128);
         f.await();
     }
 
@@ -232,7 +232,7 @@ program dark_optimistic_oracle.aleo {
         let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
         let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32);
         assert(block.height+mock > assertion.voting_deadline_block_height);
-        assert(refund_amount == assertion.voter_fee);
+        assert(refund_amount == assertion.voter_stake);
         f.await();
     }
 
