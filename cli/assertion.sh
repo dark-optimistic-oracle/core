@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-set -x
+#set -x
 
 cd ..
 . ./.env
