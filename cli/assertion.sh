@@ -58,4 +58,4 @@ VOTING_DEADLINE_BLOCKS=$((BLOCK_HEIGHT + $7))
 #     "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_fee: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
 leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
     create_assertion\
-    "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_fee: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
+    "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_stake: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
