@@ -17,13 +17,13 @@ fi
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    echo "Usage: $0 [--private-key <key>] <id> <title> <content_hash> <cost> <voter_fee> <dispute_deadline_blocks> <voting_deadline_blocks>"
+    echo "Usage: $0 [--private-key <key>] <id> <title> <content_hash> <cost> <voter_stake> <dispute_deadline_blocks> <voting_deadline_blocks>"
     echo "  --private-key: Optional private key for signing (string)"
     echo "  id: The ID of the assertion (field)"
     echo "  title: The title of the assertion (field)"
     echo "  content_hash: The hash of the content being asserted (field)"
     echo "  cost: The cost of the assertion (in DOOR tokens) (u128)"
-    echo "  voter_fee: The fee for voters (in DOOR tokens) (u128)"
+    echo "  voter_stake: The stake for voters (in DOOR tokens) (u128)"
     echo "  dispute_deadline_blocks: The number of blocks before the dispute deadline (u32)"
     echo "  voting_deadline_blocks: The number of blocks before the voting deadline (u32)"
     exit 0
@@ -55,7 +55,7 @@ VOTING_DEADLINE_BLOCKS=$((BLOCK_HEIGHT + $7))
 # snarkos developer execute\
 #     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
 #     dark_optimistic_oracle.aleo create_assertion\
-#     "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_fee: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
+#     "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_stake: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
 leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
     create_assertion\
     "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_stake: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"

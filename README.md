@@ -46,7 +46,7 @@ Each command can be run with a switch `--help` or `-h` to display the usage inst
 
 `mock_block.sh [<blocks>]` - for testing purposes mocks the block number forward by a given number of block or shows the current state.
 
-`assertion.sh [--private-key <key>] <id> <title> <content_hash> <cost> <voter_fee> <dispute_deadline_blocks> <voting_deadline_blocks>` - creates an Assertion.
+`assertion.sh [--private-key <key>] <id> <title> <content_hash> <cost> <voter_stake> <dispute_deadline_blocks> <voting_deadline_blocks>` - creates an Assertion.
 
 `dispute.sh [--private-key <key>] <id>` - disputes the Assertion with the given ID.
 
