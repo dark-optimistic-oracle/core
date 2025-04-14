@@ -140,7 +140,7 @@ snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOIN
 ```
 showing the record:
 ```
-{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 4733358954092649260377053942330621551390697076152912788781423822102277473161group.public}
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 277371004391573089140297126167516628773765470541158264118889738585677388472group.public}
 ```
 for Voter 2  (from the top folder):
 ```zsh
@@ -152,7 +152,7 @@ snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOIN
 ```
 showing the record:
 ```
-{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 3164912421062880698904577849821557474640617218810593538985599561446768618177group.public}
+{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 784168063592225499871266188775056245182677726129773108352334042187609381140group.public}
 ```
 and for Voter 3  (from the top folder):
 ```
@@ -164,7 +164,7 @@ snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOIN
 ```
 showing the record:
 ```
-{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 381329864503671498489030618147303353610696982070978174690538519685347813558group.public}
+{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 8019045919632328360071175407155749086606574539905300648471910660955015366659group.public}
 ```
 
 # DEMO STARTS HERE
@@ -197,7 +197,7 @@ Each voter has to execute the following steps:
 Voter 1 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
 ./voting_right.sh --private-key $VOTER_1_PK\
-  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 4733358954092649260377053942330621551390697076152912788781423822102277473161group.public}"\
+  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 277371004391573089140297126167516628773765470541158264118889738585677388472group.public}"\
   123field 1_000_000u128
 ```
 and check:
@@ -209,44 +209,12 @@ which yields a the VotingRight record:
 {  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  _nonce: 5251877804278858571597495782897757233554221464950106793869681667540963719004group.public}
 ```
 
-Voter 2 can first pay to obtain a voting right (from the `cli` folder):
-```zsh
-./voting_right.sh --private-key $VOTER_2_PK\
-  "{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 2962399841561112017937952148222288338373317184206164038387692336673593229523group.public}"\
-  123field 1_000_000u128
-```
-
-and check:
-```
-snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
-```
-which yields a the VotingRight record:
-```
-{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  assertion_id: 123field.private,  _nonce: 6333138485865701703454301964414862924300558173733845628826145309725067170093group.public}
-```
-
-Voter 3 can first pay to obtain a voting right (from the `cli` folder):
-```zsh
-./voting_right.sh --private-key $VOTER_3_PK\
-  "{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 551272804954095516909225178664851008670266548601865780905841470616282619235group.public}"\
-  123field 1_000_000u128
-```
-
-and check:
-```
-snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
-```
-which yields a the VotingRight record:
-```
-{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  assertion_id: 123field.private,  _nonce: 5592953958199139390592055861706805442555019116217359107379669006817086224269group.public}
-```
-
 #### Vote
 
 Voter 1 will confirm the assertion (from the `cli` folder):
 ```zsh
 ./confirm.sh --private-key $VOTER_1_PK\
-  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 4867880028533656011815749949706599911911703201665253485260245346807842534483group.public}"
+  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  _nonce: 7224570950046034840264383448272065689339834567820446875159762296281676219711group.public}"
 ```
 and check:
 ```
@@ -254,35 +222,7 @@ snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOIN
 ```
 which yields a the VotingReceipt record:
 ```
-{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 431488381718330508005046931799418055365563462661083231908344157221646709934group.public}
-```
-
-Voter 2 will confirm the assertion (from the `cli` folder):
-```zsh
-./confirm.sh --private-key $VOTER_2_PK\
-  "{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  assertion_id: 123field.private,  _nonce: 6333138485865701703454301964414862924300558173733845628826145309725067170093group.public}"
-```
-and check:
-```
-snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
-```
-which yields a the VotingReceipt record:
-```
-{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 8020196204436538834976184008213952140417282467884384617925299150718107814925group.public}
-```
-
-Voter 3 will deny the assertion (from the `cli` folder):
-```zsh
-./deny.sh --private-key $VOTER_3_PK\
-  "{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  assertion_id: 123field.private,  _nonce: 5592953958199139390592055861706805442555019116217359107379669006817086224269group.public}"
-```
-and check:
-```
-snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
-```
-which yields a the VotingReceipt record:
-```
-{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  assertion_id: 123field.private,  outcome: false.private,  _nonce: 4788777906723157356225912187595939256137597807768688906442037919943261414844group.public}
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 3698554626019753549174843776662556611928634324269542591095647631427779389371group.public}
 ```
 
 ### See the voting result
@@ -349,7 +289,7 @@ Voter 1 can collect (from the `cli` folder):
 ```zsh
 ./voter_collect.sh --private-key $VOTER_1_PK\
   1_010_000u128\
-  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 431488381718330508005046931799418055365563462661083231908344157221646709934group.public}"
+  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 3698554626019753549174843776662556611928634324269542591095647631427779389371group.public}"
 ```
 and check:
 ```zsh
@@ -357,41 +297,8 @@ snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOIN
 ```
 which yields refund and voting award record:
 ```zsh
-{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1010000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 0u32.private,  _nonce: 5798728943360335703152236969328269452460062391951847919275153200815336855926group.public}
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1010000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 0u32.private,  _nonce: 4593352141682088004446975126108000616022414528942292467306176604613955244927group.public}
 ```
-
-Voter 2 can collect (from the `cli` folder):
-```zsh
-./voter_collect.sh --private-key $VOTER_2_PK\
-  1_010_000u128\
-  "{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 8020196204436538834976184008213952140417282467884384617925299150718107814925group.public}"
-```
-and check:
-```zsh
-snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
-```
-which yields refund and voting award record:
-```zsh
-{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1010000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 0u32.private,  _nonce: 3991115892287010997836524660674400599054163270395757269398075570095425527037group.public}
-```
-
-Voter 3 can try to collect (from the `cli` folder):
-```zsh
-./voter_collect.sh --private-key $VOTER_3_PK\
-  1_010_000u128\
-  "{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  assertion_id: 123field.private,  outcome: false.private,  _nonce: 4788777906723157356225912187595939256137597807768688906442037919943261414844group.public}"
-```
-and check:
-```zsh
-snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
-```
-which yields nothing for refund and voting award, because of the incorrect voting - he got slashed:
-```zsh
-Scanning 10 blocks for records (100% complete)...   
-
-No records found
-```
-no matter how many times we try this - the transaction failed.
 
 #### Get Refund for unused Voting Right
 
