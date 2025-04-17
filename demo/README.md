@@ -248,7 +248,7 @@ If the voter did not vote on time they can get a refund for the VotingRight (fro
 ```zsh
 ./voter_refund.sh --private-key $VOTER_1_PK\
   1_000_000u128\
-  "<VOTER_REFUND>"
+  "<VOTING_RIGHT>"
 ```
 and check:
 ```zsh
