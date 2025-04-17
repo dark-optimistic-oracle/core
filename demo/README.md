@@ -116,7 +116,7 @@ snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOIN
 ```
 showing the record:
 ```
-<VOTER_1_FUNDS>
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 2894502383172728418202780565592248789371832104607620252600354293189780610402group.public}
 ```
 
 # DEMO STARTS HERE
