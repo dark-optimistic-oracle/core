@@ -149,7 +149,7 @@ Each voter has to execute the following steps:
 Voter 1 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
 ./voting_right.sh --private-key $VOTER_1_PK\
-  "<VOTER_1_FUNDS>"\
+  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 2894502383172728418202780565592248789371832104607620252600354293189780610402group.public}"\
   123field 1_000_000u128
 ```
 and check:
@@ -158,7 +158,7 @@ snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOIN
 ```
 which yields a the VotingRight record:
 ```
-<VOTING_RIGHT>
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  _nonce: 8142489020909058169667610745486223210317334644536010983436253939908453306014group.public}
 ```
 
 #### Vote
@@ -166,7 +166,7 @@ which yields a the VotingRight record:
 Voter 1 will confirm the assertion (from the `cli` folder):
 ```zsh
 ./confirm.sh --private-key $VOTER_1_PK\
-  "<VOTING_RIGHT>"
+  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  _nonce: 8142489020909058169667610745486223210317334644536010983436253939908453306014group.public}"
 ```
 and check:
 ```
@@ -174,7 +174,7 @@ snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOIN
 ```
 which yields a the VotingReceipt record:
 ```
-<VOTING_RECEIPT>
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 4668855159890029137863562680018553248884035769925405512731572464510416538228group.public}
 ```
 
 ### See the voting result
@@ -198,7 +198,12 @@ and check:
 ```
 which yields the refund record:
 ```zsh
-<REFUND>
+{
+  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field,
+  account: aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca,
+  balance: 90000000u128,
+  authorized_until: 4294967295u32
+}
 ```
 
 If the disputer were right, he would collect the refund and award (from the `cli` folder):
@@ -213,7 +218,12 @@ and check:
 ```
 which should yields the refund record, but this time the transaction would fail as the disputer was not right and obtain nothing:
 ```zsh
-<NO_REFUND>
+{
+  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field,
+  account: aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52,
+  balance: 0u128,
+  authorized_until: 4294967295u32
+}
 ```
 
 ### Voter collect awards
@@ -231,7 +241,7 @@ Voter 1 can collect (from the `cli` folder):
 ```zsh
 ./voter_collect.sh --private-key $VOTER_1_PK\
   1_010_000u128\
-  "<VOTING_RECEIPT>"
+  "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 4668855159890029137863562680018553248884035769925405512731572464510416538228group.public}"
 ```
 and check:
 ```zsh
@@ -239,7 +249,7 @@ snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOIN
 ```
 which yields refund and voting award record:
 ```zsh
-<VOTER_AWARD>
+{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1010000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 0u32.private,  _nonce: 5995886045448070171581740834371556296228279550125974180032087431266993484030group.public}
 ```
 
 #### Get Refund for unused Voting Right
@@ -276,6 +286,11 @@ and see the new balance:
 ```
 showing:
 ```
-<PROTOCOL_BALANCE>
+{
+  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field,
+  account: aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px,
+  balance: 9999999799001000u128,
+  authorized_until: 0u32
+}
 ```
-which is up by 1000u128 from the previous balance of <OLD_BALANCE>.
+which is up by 1000u128 from the previous balance of 9999999799000000u128.
