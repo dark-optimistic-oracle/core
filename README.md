@@ -4,13 +4,18 @@
 
 Clone this repository (`git@github.com:dark-optimistic-oracle/core.git`) and `git@github.com:dark-optimistic-oracle/token-registry-workaround.git`.
 
+Start a local Aleo blockchain node:
 In one zsh terminal run the following:
 ```zsh
-amareleo-chain start
+./run_node.sh
 ```
 or to keep state across runs run:
 ```zsh
-amareleo-chain start  --keep-state
+./run_node.sh --keep-state
+```
+to clean the state later, run:
+```zsh
+./run_node.sh --clean
 ```
 
 To install:
