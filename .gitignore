@@ -8,3 +8,6 @@ build/
 **/.amareleo*
 temp
 **/.DS_Store
+.ledger-*
+.current-proposal-cache-*
+*.log
