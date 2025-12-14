@@ -23,6 +23,8 @@ EOF
     exit 0
 fi
 
+
+# See: https://docs.leo-lang.org/guides/devnet
 if [[ "$1" == "--clean" ]]; then
     # Remove the snarkos-data folder
     # amareleo-chain clean
