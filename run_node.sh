@@ -13,6 +13,10 @@ Options:
   --install       (Re)install snarkOS at ./snarkos before starting
   --help, -h      Display this help message
 
+Environment:
+    DEVNET_STORAGE      Optional devnet storage directory (default: ./temp/devnet)
+    CONSENSUS_HEIGHTS   Optional comma-separated consensus heights passed to leo devnet
+
 Examples:
   ./run_node.sh
   ./run_node.sh --install
@@ -46,6 +50,7 @@ for arg in "$@"; do
 done
 
 snarkos_path="./snarkos"
+devnet_storage="${DEVNET_STORAGE:-./temp/devnet}"
 
 # Fail early with a clear message if install was not requested and snarkos is missing.
 if [[ "$install" != "true" ]] && [[ ! -x "$snarkos_path" ]]; then
@@ -56,10 +61,14 @@ fi
 
 cmd=(
     leo devnet --yes
+    --storage "$devnet_storage"
     --snarkos "$snarkos_path"
     --snarkos-features test_network
-    --consensus-heights 0,1,2,3,4,5,6,7,8,9,10,11
 )
+
+if [[ -n "${CONSENSUS_HEIGHTS:-}" ]]; then
+    cmd+=(--consensus-heights "$CONSENSUS_HEIGHTS")
+fi
 
 if [[ "$install" == "true" ]]; then
     cmd+=(--install)
