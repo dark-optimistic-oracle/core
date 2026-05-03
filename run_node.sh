@@ -2,44 +2,71 @@
 set -e
 #set -x
 
-# Parse command line argument
-if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
+show_help() {
     cat << 'EOF'
-Usage: ./run_node.sh [OPTION]
+Usage: ./run_node.sh [OPTIONS]
 
 Run a local Aleo development network node.
 
 Options:
-  --clean         Remove the snarkos-data folder and start with fresh storage
-  --keep-state    Start with persistent storage (keeps blockchain state between restarts)
-  (no option)     Start with transient storage (default, clears storage on each run)
+  --clean         Clear existing devnet storage before starting
+  --install       (Re)install snarkOS at ./snarkos before starting
   --help, -h      Display this help message
 
 Examples:
-  ./run_node.sh              # Start node with fresh storage (default)
-  ./run_node.sh --clean      # Clean storage and start fresh
-  ./run_node.sh --keep-state # Start with persistent storage
+  ./run_node.sh
+  ./run_node.sh --install
+  ./run_node.sh --clean
+  ./run_node.sh --clean --install
 EOF
-    exit 0
+}
+
+clean=false
+install=false
+
+# Parse combinable flags.
+for arg in "$@"; do
+    case "$arg" in
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        --clean)
+            clean=true
+            ;;
+        --install)
+            install=true
+            ;;
+        *)
+            echo "Unknown option: $arg"
+            echo "Run ./run_node.sh --help for usage."
+            exit 1
+            ;;
+    esac
+done
+
+snarkos_path="./snarkos"
+
+# Fail early with a clear message if install was not requested and snarkos is missing.
+if [[ "$install" != "true" ]] && [[ ! -x "$snarkos_path" ]]; then
+    echo "snarkOS not found or not executable at $snarkos_path"
+    echo "Run ./run_node.sh --install to build it."
+    exit 1
 fi
 
+cmd=(
+    leo devnet --yes
+    --snarkos "$snarkos_path"
+    --snarkos-features test_network
+    --consensus-heights 0,1,2,3,4,5,6,7,8,9,10,11
+)
 
-# See: https://docs.leo-lang.org/guides/devnet
-if [[ "$1" == "--clean" ]]; then
-    # Remove the snarkos-data folder
-    # amareleo-chain clean
-    # rm -rf ./snarkos-data
-    # echo "Cleaned snarkos-data folder"
-    leo devnet --yes --snarkos ~/.cargo/bin/snarkos --storage ./temp/devnet --snarkos-features test_network --clear-storage
-elif [[ "$1" == "--keep-state" ]]; then
-    # Start with persistent storage
-    # amareleo-chain start --keep-state
-    # snarkos start --nodisplay --dev 0 --validator --storage-path ./snarkos-data
-    leo devnet --yes --snarkos ~/.cargo/bin/snarkos --storage ./temp/devnet --snarkos-features test_network
-else
-    # Start a local development validator (transient storage)
-    # amareleo-chain start
-    # snarkos start --nodisplay --dev 0 --validator
-    leo devnet --yes --snarkos ./snarkos --install --snarkos-features test_network --consensus-heights 0,1,2,3,4,5,6,7,8,9,10,11
-    # leo devnet --yes --snarkos ~/.cargo/bin/snarkos --storage ./temp/devnet --snarkos-features test_network --clear-storage --consensus-heights 0,1,2,3,4,5,6,7,8,9,10,11
+if [[ "$install" == "true" ]]; then
+    cmd+=(--install)
 fi
+
+if [[ "$clean" == "true" ]]; then
+    cmd+=(--clear-storage)
+fi
+
+"${cmd[@]}"
