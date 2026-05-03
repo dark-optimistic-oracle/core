@@ -30,15 +30,16 @@ if [[ "$1" == "--clean" ]]; then
     # amareleo-chain clean
     # rm -rf ./snarkos-data
     # echo "Cleaned snarkos-data folder"
-    leo devnet --yes --snarkos ~/.cargo/bin/snarkos --snarkos-features test_network --clear-storage
+    leo devnet --yes --snarkos ~/.cargo/bin/snarkos --storage ./temp/devnet --snarkos-features test_network --clear-storage
 elif [[ "$1" == "--keep-state" ]]; then
     # Start with persistent storage
     # amareleo-chain start --keep-state
     # snarkos start --nodisplay --dev 0 --validator --storage-path ./snarkos-data
-    leo devnet --yes --snarkos ~/.cargo/bin/snarkos --snarkos-features test_network
+    leo devnet --yes --snarkos ~/.cargo/bin/snarkos --storage ./temp/devnet --snarkos-features test_network
 else
     # Start a local development validator (transient storage)
     # amareleo-chain start
     # snarkos start --nodisplay --dev 0 --validator
-    leo devnet --yes --snarkos ~/.cargo/bin/snarkos --snarkos-features test_network --clear-storage
+    leo devnet --yes --snarkos ./snarkos --install --snarkos-features test_network --consensus-heights 0,1,2,3,4,5,6,7,8,9,10,11
+    # leo devnet --yes --snarkos ~/.cargo/bin/snarkos --storage ./temp/devnet --snarkos-features test_network --clear-storage --consensus-heights 0,1,2,3,4,5,6,7,8,9,10,11
 fi
