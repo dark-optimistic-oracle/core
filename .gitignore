@@ -11,3 +11,4 @@ temp
 .ledger-*
 .current-proposal-cache-*
 *.log
+snarkos
