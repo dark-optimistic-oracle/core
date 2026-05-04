@@ -46,6 +46,6 @@ fi
 
 # One parameter: set the new mocking value
 if [[ $# -eq 1 ]]; then
-    leo execute mock_block_height $1 --yes --local --broadcast                                                            
+    leo execute mock_block_height $1 --yes --broadcast --devnet --max-wait 20 --blocks-to-check 100                                                            
     exit 0
 fi

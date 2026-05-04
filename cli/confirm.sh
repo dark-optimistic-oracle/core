@@ -42,5 +42,5 @@ fi
 #     --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
 #     dark_optimistic_oracle.aleo confirm\
 #     $1
-leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
+leo execute --private-key $PRIVATE_KEY --yes --broadcast --devnet --max-wait 20 --blocks-to-check 100\
     confirm $1

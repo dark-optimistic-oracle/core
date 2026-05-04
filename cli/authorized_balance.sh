@@ -17,9 +17,8 @@ if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then
     exit 1
 fi
 
-# Set token_id and address based on number of parameters
+# Set address first; token_id may be provided or inferred later.
 if [[ $# -eq 1 ]]; then
-    TOKEN_ID="17235612283251326583536974293363256992451820371731919189503231730609724436387field"
     ADDRESS="$1"
 else
     TOKEN_ID="$1"
@@ -29,11 +28,22 @@ fi
 cd ..
 . ./.env
 
-# Run balance_key and capture the output - remove trailing 'field' and clean whitespace
-KEY=$(leo run balance_key $TOKEN_ID $ADDRESS | grep "field" | sed 's/•//g' | tr -d '[:space:]')
-# echo "Using key: $KEY"
+if [[ -z "$TOKEN_ID" ]]; then
+    TOKEN_ID=$(leo run get_token_id 2>&1 | grep -Eo '[0-9]+field' | tail -n 1)
+    if [[ -z "$TOKEN_ID" ]]; then
+        echo "ERROR: Could not infer token id from program output."
+        exit 1
+    fi
+fi
+
+# Run balance_key and extract the final field literal as the mapping key.
+KEY=$(leo run balance_key "$TOKEN_ID" "$ADDRESS" 2>&1 | grep -Eo '[0-9]+field' | tail -n 1)
+if [[ -z "$KEY" ]]; then
+    echo "ERROR: Could not extract mapping key from balance_key output."
+    exit 1
+fi
 
 # Use the captured key to query the balance (fixed program name format)
-RESULT=$(leo query program token_registry.aleo --mapping-value authorized_balances $KEY)
+RESULT=$(leo query program token_registry.aleo --mapping-value authorized_balances "$KEY")
 RESULT=$(echo "$RESULT" | grep -A 999 "Successfully" | tail -n +3)
 echo "$RESULT"

@@ -11,9 +11,10 @@ fi
 cd ..
 . ./.env
 
-# Run balance_key and capture the output - remove trailing 'field' and clean whitespace
-RESULT=$(leo run get_token_id)
-#echo Result:
-#echo $RESULT
-RESULT=$(echo $RESULT | grep -A 2 "Output" | sed '1d; s/•//g' | tr -d '[:space:]')
-echo $RESULT
+# Extract the last field literal from leo output.
+RESULT=$(leo run get_token_id 2>&1 | grep -Eo '[0-9]+field' | tail -n 1)
+if [[ -z "$RESULT" ]]; then
+    echo "ERROR: Could not extract token id from leo run get_token_id output."
+    exit 1
+fi
+echo "$RESULT"

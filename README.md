@@ -64,7 +64,7 @@ Each command can be run with a switch `--help` or `-h` to display the usage inst
 
 `confirm.sh [--private-key <key>] <voting_right>` - votes "yes" for the Assertion for which the Voting Right record was created. Creates a private Voting Receipt record.
 
-`deny.sh [--private-key <key>] <voting_right>` - votes "yes" for the Assertion for which the Voting Right record was created. Creates a private Voting Receipt record.
+`deny.sh [--private-key <key>] <voting_right>` - votes "no" for the Assertion for which the Voting Right record was created. Creates a private Voting Receipt record.
 
 `asserter_collect.sh [--private-key <key>] <cost> <id>` - asserter publicly collects the partial refund for the Assertion with the given ID with anticipated Assertion Cost, in case the assertion is not disputed or confirmed via voting.
 

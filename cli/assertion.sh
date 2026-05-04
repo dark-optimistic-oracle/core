@@ -43,8 +43,11 @@ if [[ $# -eq 0 ]] || [[ $# -gt 9 ]]; then
 fi
 
 # Get the latest block height
-BLOCK_HEIGHT=$(leo query block --latest-height)
-BLOCK_HEIGHT=$(echo $BLOCK_HEIGHT | grep -oE '[0-9]+$')
+BLOCK_HEIGHT=$(leo query block --latest-height 2>&1 | grep -Eo '[0-9]+' | tail -n 1)
+if [[ -z "$BLOCK_HEIGHT" ]]; then
+    echo "Error: Could not parse latest block height from leo output."
+    exit 1
+fi
 
 # Add the BLOCK_HEIGHT to the dispute and voting deadline parameters
 DISPUTE_DEADLINE_BLOCKS=$((BLOCK_HEIGHT + $6))
@@ -56,6 +59,6 @@ VOTING_DEADLINE_BLOCKS=$((BLOCK_HEIGHT + $7))
 #     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
 #     dark_optimistic_oracle.aleo create_assertion\
 #     "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_stake: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
-leo execute --private-key $PRIVATE_KEY --yes --local --broadcast\
+leo execute --private-key $PRIVATE_KEY --yes --broadcast --devnet --max-wait 20 --blocks-to-check 100\
     create_assertion\
     "{ id: $1, title: $2, content_hash: $3, cost: $4, voter_stake: $5, dispute_deadline_block_height: ${DISPUTE_DEADLINE_BLOCKS}u32, voting_deadline_block_height: ${VOTING_DEADLINE_BLOCKS}u32 }"
