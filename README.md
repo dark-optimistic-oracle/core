@@ -23,6 +23,11 @@ To install:
 ./install.sh
 ```
 
+The install script is idempotent and can be safely re-run.
+It deploys `dark_optimistic_oracle.aleo`, and if the program is already deployed it automatically runs `leo upgrade` instead.
+It also verifies on-chain confirmation markers for deploy/upgrade and initialize, and exits on unexpected outcomes.
+If initialize is rejected on-chain during a rerun (already initialized), the script treats that as a non-fatal condition and continues.
+
 ## Demo
 
 The demo of the complete workflow with commands that are actually executed is [here](./demo/README.md).

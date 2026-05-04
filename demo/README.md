@@ -100,6 +100,11 @@ Install the program dark_optimistic_oracle.aleo and its dependencies:
 ./install.sh
 ```
 
+The installer is safe to run multiple times.
+If `dark_optimistic_oracle.aleo` is already deployed, it automatically switches to upgrade.
+The script waits for on-chain confirmation of deploy/upgrade and initialize, and fails on unexpected results.
+On reruns, initialize may be rejected because the program is already initialized; this is handled as a non-fatal case.
+
 ### Fund the accounts
 
 We will not use relayers for this demo. Each account will broadcast its own calls.
