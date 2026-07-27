@@ -26,7 +26,7 @@ leo -q \
     --home "$TEST_ROOT/.aleo" \
     test \
     --network testnet \
-    --endpoint "${ALEO_TEST_ENDPOINT:-https://api.explorer.provable.com/v2}" \
+    --endpoint "${ALEO_TEST_ENDPOINT:-https://api.provable.com/v2}" \
     --path "$TEST_ROOT/oracle"
 
 echo "All core Leo unit tests passed."

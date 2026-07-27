@@ -83,10 +83,19 @@ testnet address or key into contract source.
 ./deploy_testnet.sh
 ```
 
+Use `./deploy_testnet.sh --resume` after an interrupted run whose deployment
+transaction may already have been accepted. It verifies and skips an existing
+program instead of paying for an unnecessary upgrade.
+
 The script refuses to deploy with the known devnet admin. Otherwise it builds
 against the canonical registry, deploys and initializes a new
 oracle, or performs an admin-authorized upgrade when the oracle already exists.
 It fails closed if the official API cannot determine the current program state.
+
+The shared oracle is now deployed and initialized on Testnet. See
+[DEPLOYMENTS.md](DEPLOYMENTS.md) for its program address, administrator,
+accepted transaction IDs, and the distinct local-devnet account roles. The
+combined oracle-plus-market deployment is recorded in the `predmkt` repository.
 
 Deployment and initialization fees depend on the compiled program and current
 network rules. Fund the deployer before broadcasting and retain enough public

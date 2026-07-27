@@ -109,15 +109,15 @@ echo "[2/4] leo clean and build"
 leo clean
 leo build
 
-status="$(program_status)"
-if [[ "$status" == "200" ]]; then
+program_http_code="$(program_status)"
+if [[ "$program_http_code" == "200" ]]; then
   echo "[3/4] upgrade dark_optimistic_oracle.aleo"
   run_leo_checked \
     "upgrade" \
     "Upgrade confirmed!" \
     deploy \
     leo upgrade "${common_args[@]}"
-elif [[ "$status" == "404" ]]; then
+elif [[ "$program_http_code" == "404" ]]; then
   echo "[3/4] deploy dark_optimistic_oracle.aleo"
   run_leo_checked \
     "deploy" \
@@ -125,7 +125,7 @@ elif [[ "$status" == "404" ]]; then
     deploy \
     leo deploy "${common_args[@]}"
 else
-  echo "Unable to determine dark_optimistic_oracle.aleo state (HTTP ${status})."
+  echo "Unable to determine dark_optimistic_oracle.aleo state (HTTP ${program_http_code})."
   exit 1
 fi
 

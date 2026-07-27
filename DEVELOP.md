@@ -54,7 +54,9 @@ current public Testnet administrator is:
   do not attempt to install the live canonical registry into a test ledger.
 - `deploy_testnet.sh` verifies that the Testnet key controls the configured
   administrator, builds against canonical `token_registry.aleo`, and deploys
-  or upgrades with confirmation checks.
+  or upgrades with confirmation checks. Public initialization executes the
+  deployed program directly, while `--resume` safely skips an already accepted
+  deployment.
 - CLI mapping queries use `leo -q query` so Leo does not print loaded `.env`
   contents.
 
@@ -81,8 +83,20 @@ This is a host-toolchain fallback, not a second runtime dependency.
 
 ## Public deployment status
 
-The Testnet account is configured and funded, but deployment is not yet
-broadcast. The current oracle deployment estimate is `26.954929` credits,
-which exceeds the available `9.49` credits before initialization and market
-deployment costs. Obtain additional faucet credits before running the live
-script.
+`dark_optimistic_oracle.aleo` was deployed to Testnet at edition `0` and
+initialized against the canonical `token_registry.aleo`. Its configured admin,
+fee collector, and initial DOOR recipient are the dedicated shared Testnet
+account documented in [DEPLOYMENTS.md](DEPLOYMENTS.md). The prediction-market
+repository performed the coordinated deployment, so rerunning the standalone
+core script without intending an upgrade would spend an unnecessary upgrade
+fee.
+
+The public API verified the program, its edition, and the initialized
+`fee_collector` mapping. Public API consumers now use Provable's `/v2` endpoint;
+the frontend also falls back between the two official `/v2` hosts during
+temporary propagation differences.
+
+After the later funding transfer and all three accepted transactions, the
+dedicated deployer retained `11.723278` public Testnet credits. Request future
+deployment or upgrade funds for that dedicated address, not the retained
+generic devnet account.

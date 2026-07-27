@@ -5,6 +5,24 @@ set +x
 SCRIPT_DIR="${0:A:h}"
 cd "$SCRIPT_DIR"
 
+RESUME=false
+for argument in "$@"; do
+  case "$argument" in
+    --resume)
+      RESUME=true
+      ;;
+    --help|-h)
+      echo "Usage: ./deploy_testnet.sh [--resume]"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: ${argument}"
+      echo "Usage: ./deploy_testnet.sh [--resume]"
+      exit 2
+      ;;
+  esac
+done
+
 PUBLIC_ENV_FILE="${PUBLIC_ENV_FILE:-${SCRIPT_DIR}/.env.testnet}"
 PRIVATE_ENV_FILE="${PRIVATE_ENV_FILE:-${SCRIPT_DIR}/.env.private}"
 
@@ -23,7 +41,7 @@ set -a
 set +a
 
 PRIVATE_KEY="${TESTNET_PRIVATE_KEY:-}"
-TESTNET_ENDPOINT="${ENDPOINT:-${TESTNET_ENDPOINT:-https://api.explorer.provable.com/v2}}"
+TESTNET_ENDPOINT="${ENDPOINT:-${TESTNET_ENDPOINT:-https://api.provable.com/v2}}"
 DEVNET_ADMIN="aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px"
 
 if [[ "${NETWORK:-}" != "testnet" || -z "$PRIVATE_KEY" || -z "${PROTOCOL:-}" ]]; then
@@ -62,8 +80,30 @@ leo --home "$DEPLOY_ROOT/.aleo" build \
   --endpoint "$TESTNET_ENDPOINT" \
   --path "$DEPLOY_ROOT"
 
-PROGRAM_URL="${TESTNET_ENDPOINT}/testnet/program/dark_optimistic_oracle.aleo"
-PROGRAM_STATUS="$(curl -sS -o /dev/null -w "%{http_code}" --max-time 20 "$PROGRAM_URL")"
+PROGRAM_ID="dark_optimistic_oracle.aleo"
+program_status() {
+  local response_body="$DEPLOY_ROOT/program-status.txt"
+  local response_code
+  response_code="$(curl -sS -o "$response_body" -w "%{http_code}" --max-time 20 \
+    "${TESTNET_ENDPOINT}/testnet/program/${PROGRAM_ID}")" || {
+      echo "000"
+      return
+    }
+  if [[ "$response_code" == "404" ]]; then
+    local edition_code
+    local edition_value
+    edition_code="$(curl -sS -o "$response_body" -w "%{http_code}" --max-time 20 \
+      "${TESTNET_ENDPOINT}/testnet/program/${PROGRAM_ID}/latest_edition")" || edition_code="000"
+    edition_value="$(<"$response_body")"
+    if [[ "$edition_code" == "200" && "$edition_value" == <-> ]]; then
+      echo "200"
+      return
+    fi
+  fi
+  echo "$response_code"
+}
+
+PROGRAM_STATUS="$(program_status)"
 COMMON_ARGS=(
   --yes
   --broadcast
@@ -74,7 +114,6 @@ COMMON_ARGS=(
   --max-wait 30
   --blocks-to-check 100
   --home "$DEPLOY_ROOT/.aleo"
-  --path "$DEPLOY_ROOT"
 )
 
 run_checked() {
@@ -86,10 +125,24 @@ run_checked() {
   local exit_code
   local transaction_id
   local transaction_body
-  set +e
-  output="$("$@" 2>&1)"
-  exit_code=$?
-  set -e
+  local attempt=1
+  local verification_attempt
+  while true; do
+    set +e
+    output="$("$@" 2>&1)"
+    exit_code=$?
+    set -e
+    if (( exit_code != 0 && attempt < 3 )) &&
+      [[ "$output" == *"/stateRoot/latest"* ]] &&
+      [[ "$output" == *"Failed to fetch"* ]] &&
+      [[ "$output" != *"Broadcasted transaction"* ]]; then
+      echo "${step_name} hit a transient state-root fetch failure; retrying ($((attempt + 1))/3)."
+      attempt=$((attempt + 1))
+      sleep 2
+      continue
+    fi
+    break
+  done
   printf '%s\n' "$output" |
     sed -E 's/APrivateKey1[[:alnum:]]+/[REDACTED]/g'
   if (( exit_code == 0 )) &&
@@ -106,10 +159,17 @@ run_checked() {
       true
   )"
   if [[ -n "$transaction_id" ]]; then
-    transaction_body="$(
-      curl -fsS "${TESTNET_ENDPOINT}/testnet/transaction/${transaction_id}" ||
-        true
-    )"
+    transaction_body=""
+    for verification_attempt in {1..15}; do
+      transaction_body="$(
+        curl -fsS "${TESTNET_ENDPOINT}/testnet/transaction/${transaction_id}" ||
+          true
+      )"
+      if [[ "$transaction_body" == *"\"type\": \"${expected_transaction_type}\""* ]]; then
+        break
+      fi
+      sleep 2
+    done
   else
     transaction_body=""
   fi
@@ -123,11 +183,17 @@ run_checked() {
 }
 
 if [[ "$PROGRAM_STATUS" == "200" ]]; then
-  echo "Program already exists on testnet; broadcasting an administrator-authorized upgrade."
-  run_checked "Upgrade" "Upgrade confirmed!" deploy leo upgrade "${COMMON_ARGS[@]}" --skip token_registry.aleo
+  if [[ "$RESUME" == "true" ]]; then
+    echo "Program already exists on testnet; --resume skips an unnecessary upgrade."
+  else
+    echo "Program already exists on testnet; broadcasting an administrator-authorized upgrade."
+    run_checked "Upgrade" "Upgrade confirmed!" deploy \
+      leo upgrade "${COMMON_ARGS[@]}" --path "$DEPLOY_ROOT" --skip token_registry.aleo
+  fi
 elif [[ "$PROGRAM_STATUS" == "404" ]]; then
   echo "Program is not deployed; broadcasting the initial deployment."
-  run_checked "Deploy" "Deployment confirmed!" deploy leo deploy "${COMMON_ARGS[@]}" --skip token_registry.aleo
+  run_checked "Deploy" "Deployment confirmed!" deploy \
+    leo deploy "${COMMON_ARGS[@]}" --path "$DEPLOY_ROOT" --skip token_registry.aleo
 else
   echo "Unable to determine testnet program state (HTTP ${PROGRAM_STATUS})."
   exit 1
@@ -140,7 +206,8 @@ FEE_COLLECTOR="$(
 )"
 if [[ -z "$FEE_COLLECTOR" || "$FEE_COLLECTOR" == "null" || "$FEE_COLLECTOR" == '"null"' ]]; then
   echo "Initializing the DOOR token in canonical token_registry.aleo..."
-  run_checked "Initialize" "Execution confirmed!" execute leo execute initialize "${COMMON_ARGS[@]}"
+  run_checked "Initialize" "Execution confirmed!" execute \
+    leo execute "${PROGRAM_ID}::initialize" "${COMMON_ARGS[@]}" --no-local
 else
   echo "dark_optimistic_oracle.aleo is already initialized; skipping initialize."
 fi
