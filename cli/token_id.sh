@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-# set -x
+set +x
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
@@ -10,6 +10,8 @@ fi
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 # Extract the last field literal from leo output.
 RESULT=$(leo run get_token_id 2>&1 | grep -Eo '[0-9]+field' | tail -n 1)

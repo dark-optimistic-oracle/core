@@ -1,9 +1,11 @@
 #!/bin/zsh
 set -e
-#set -x
+set +x
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 # Convert NETWORK parameter from .env
 if [[ "$NETWORK" == "mainnet" ]]; then
@@ -17,7 +19,7 @@ fi
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    echo "Usage: $0 [--private-key <key>] <cost> <id>"
+    echo "Usage: $0 [--private-key <key>] <id> <payout_amount>"
     echo "  --private-key: Optional private key for signing (string)"
     echo "  cost: The anticipated cost of the assertion (in DOOR tokens) (u128)"
     echo "  id: The ID of the assertion (field)"
@@ -41,7 +43,7 @@ fi
 #     --network $NETWORK_ID --query $ENDPOINT --broadcast $ENDPOINT --private-key $PRIVATE_KEY\
 # snarkos developer execute\
 #     --network $NETWORK_ID --query $ENDPOINT --dry-run --private-key $PRIVATE_KEY\
-#     dark_optimistic_oracle.aleo collect_assertion_cost\
+#     dark_optimistic_oracle.aleo collect_assertion_award\
 #     $1 $2
 leo execute --private-key $PRIVATE_KEY --yes --broadcast --devnet --max-wait 20 --blocks-to-check 100\
-    collect_assertion_cost $1 $2
+    collect_assertion_award $1 $2

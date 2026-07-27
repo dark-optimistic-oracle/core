@@ -1,6 +1,17 @@
 #!/bin/zsh
 set -e
-#set -x
+set +x
+
+SCRIPT_DIR="${0:A:h}"
+cd "$SCRIPT_DIR"
+
+if [[ -f "$SCRIPT_DIR/.env" ]]; then
+    . "$SCRIPT_DIR/.env"
+fi
+if [[ -f "$SCRIPT_DIR/.env.private" ]]; then
+    . "$SCRIPT_DIR/.env.private"
+fi
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 show_help() {
     cat << 'EOF'
@@ -16,7 +27,7 @@ Options:
 Environment:
     DEVNET_STORAGE      Optional devnet storage directory (default: ./temp/devnet)
     CONSENSUS_HEIGHTS   Optional comma-separated consensus heights passed to leo devnet
-                        (default for test_network: 0,5,6,7,8,9,10,11,12,13,14,15,16,17)
+                        (default for test_network: 0,5,6,...,20)
     FORCE_MINE          If "true" (default), tries to fast-forward block production while waiting
 
 Examples:
@@ -53,7 +64,7 @@ done
 
 snarkos_path="./snarkos"
 devnet_storage="${DEVNET_STORAGE:-./temp/devnet}"
-default_consensus_heights="0,5,6,7,8,9,10,11,12,13,14,15,16,17"
+default_consensus_heights="0,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20"
 effective_consensus_heights="${CONSENSUS_HEIGHTS:-$default_consensus_heights}"
 endpoint="${ENDPOINT:-http://localhost:3030}"
 force_mine="${FORCE_MINE:-true}"
@@ -72,9 +83,7 @@ cmd=(
     --snarkos-features test_network
 )
 
-if [[ -n "${CONSENSUS_HEIGHTS:-}" ]]; then
-    cmd+=(--consensus-heights "$CONSENSUS_HEIGHTS")
-fi
+cmd+=(--consensus-heights "$effective_consensus_heights")
 
 if [[ "$install" == "true" ]]; then
     cmd+=(--install)
@@ -99,7 +108,7 @@ get_current_address() {
         return
     fi
     if [[ -n "${PRIVATE_KEY:-}" ]]; then
-        leo account import "$PRIVATE_KEY" 2>/dev/null | grep -oE 'aleo1[a-z0-9]+$' || true
+        leo account import "$PRIVATE_KEY" 2>/dev/null | rg -o 'aleo1[a-z0-9]{58}' | tail -1 || true
     fi
 }
 

@@ -1,13 +1,15 @@
 #!/bin/zsh
 set -e
-#set -x
+set +x
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 # Function to get the current block height
 get_current_block_height() {
-    BLOCK_HEIGHT=$(leo query block --latest-height)
+    BLOCK_HEIGHT=$(leo -q query block --latest-height)
     echo $(echo $BLOCK_HEIGHT | grep -oE '[0-9]+$')
 }
 

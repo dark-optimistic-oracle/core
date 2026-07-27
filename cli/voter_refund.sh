@@ -1,9 +1,11 @@
 #!/bin/zsh
 set -e
-#set -x
+set +x
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 # Convert NETWORK parameter from .env
 if [[ "$NETWORK" == "mainnet" ]]; then

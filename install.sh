@@ -1,128 +1,148 @@
 #!/bin/zsh
-set -e
-set -x
+set -euo pipefail
+set +x
 
-# Run ./run_node.sh to start the node before running this script
+SCRIPT_DIR="${0:A:h}"
+cd "$SCRIPT_DIR"
+
+if [[ ! -f .env || ! -f .env.private ]]; then
+  echo "Missing .env or .env.private. Copy the example files first."
+  exit 1
+fi
 
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
+API_NETWORK="${API_NETWORK:-${NETWORK:-testnet}}"
 
-if [[ -z "$NETWORK" || -z "$ENDPOINT" || -z "$PRIVATE_KEY" ]]; then
-	echo "Missing one or more required vars in .env: NETWORK, ENDPOINT, PRIVATE_KEY"
-	exit 1
+if [[ -z "${NETWORK:-}" || -z "${ENDPOINT:-}" || -z "$PRIVATE_KEY" ]]; then
+  echo "Missing required public settings in .env or DEVNET_PRIVATE_KEY in .env.private."
+  exit 1
 fi
 
 # Keep this aligned with run_node.sh local devnet consensus heights.
-CONSENSUS_HEIGHTS="${CONSENSUS_HEIGHTS:-0,1,2,3,4,5,6,7,8,9,10,11,12,13}"
+CONSENSUS_HEIGHTS="${CONSENSUS_HEIGHTS:-0,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}"
 
-# Leo may return exit code 0 even when a broadcasted transaction is not found.
-# Require an explicit confirmation marker in command output when provided.
 run_leo_checked() {
-	local step="$1"
-	local success_marker="$2"
-	shift 2
+  local step="$1"
+  local success_marker="$2"
+  local expected_transaction_type="$3"
+  shift 3
 
-	local output
-	local exit_code
-	set +e
-	output="$($@ 2>&1)"
-	exit_code=$?
-	set -e
+  local output
+  local exit_code
+  local transaction_id
+  local transaction_body
+  set +e
+  output="$("$@" 2>&1)"
+  exit_code=$?
+  set -e
 
-	echo "$output"
+  printf '%s\n' "$output" |
+    sed -E 's/APrivateKey1[[:alnum:]]+/[REDACTED]/g'
 
-	if (( exit_code != 0 )); then
-		echo "ERROR: ${step} failed with exit code ${exit_code}."
-		exit "$exit_code"
-	fi
+  if (( exit_code == 0 )) &&
+    [[ "$output" != *"Could not find the transaction."* ]] &&
+    [[ "$output" == *"$success_marker"* ]]; then
+    echo "${step} confirmed."
+    return
+  fi
 
-	if [[ "$output" == *"Could not find the transaction."* ]]; then
-		echo "ERROR: ${step} transaction was not confirmed on-chain."
-		exit 1
-	fi
+  transaction_id="$(
+    printf '%s\n' "$output" |
+      rg -o 'at1[a-z0-9]+' |
+      head -1 ||
+      true
+  )"
+  if [[ -n "$transaction_id" ]]; then
+    transaction_body="$(
+      curl -fsS "${ENDPOINT}/${API_NETWORK}/transaction/${transaction_id}" ||
+        true
+    )"
+  else
+    transaction_body=""
+  fi
+  if [[ "$transaction_body" == *"\"type\": \"${expected_transaction_type}\""* ]]; then
+    echo "${step} verified through the accepted transaction endpoint (${transaction_id})."
+    return
+  fi
 
-	if [[ -n "$success_marker" && "$output" != *"$success_marker"* ]]; then
-		echo "ERROR: ${step} did not return confirmation marker: ${success_marker}"
-		exit 1
-	fi
+  echo "ERROR: ${step} failed (exit ${exit_code}); no accepted ${expected_transaction_type} transaction was found."
+  exit 1
 }
 
-install_token_registry() {
-	local output
-	local exit_code
-
-	pushd ../token-registry-workaround
-	set +e
-	output="$(./install.sh 2>&1)"
-	exit_code=$?
-	set -e
-	echo "$output"
-
-	if (( exit_code != 0 )); then
-		if [[ "$output" == *"Program ID 'token_registry.aleo' is already deployed"* ]]; then
-			echo "token_registry.aleo already deployed; continuing."
-		else
-			echo "ERROR: token-registry-workaround/install.sh failed."
-			exit "$exit_code"
-		fi
-	fi
-
-	popd
+program_status() {
+  local response_file
+  local response_code
+  response_file="$(mktemp "${TMPDIR:-/tmp}/doo-oracle-status.XXXXXX")"
+  response_code="$(
+    curl -sS -o "$response_file" -w '%{http_code}' --max-time 20 \
+      "${ENDPOINT}/${API_NETWORK}/program/dark_optimistic_oracle.aleo"
+  )" || response_code="000"
+  if [[ "$response_code" == "500" ]] &&
+    rg -q 'Missing program for ID dark_optimistic_oracle.aleo' "$response_file"; then
+    response_code="404"
+  fi
+  rm -f "$response_file"
+  echo "$response_code"
 }
+
+common_args=(
+  --yes
+  --path .
+  --devnet
+  --broadcast
+  --endpoint "$ENDPOINT"
+  --private-key "$PRIVATE_KEY"
+  --consensus-heights "$CONSENSUS_HEIGHTS"
+  --max-wait 20
+  --blocks-to-check 100
+)
 
 echo "Using endpoint: $ENDPOINT"
 echo "Consensus heights: $CONSENSUS_HEIGHTS"
 
-echo "[1/4] install token registry dependency"
-install_token_registry
+echo "[1/4] install or upgrade token registry dependency"
+"$SCRIPT_DIR/../token-registry-workaround/install.sh"
 
-echo "[2/4] leo clean && leo build"
+echo "[2/4] leo clean and build"
 leo clean
 leo build
 
-echo "[3/4] deploy or upgrade dark_optimistic_oracle.aleo"
-set +e
-DEPLOY_OUTPUT="$(leo deploy --yes --path . --devnet --broadcast --endpoint "$ENDPOINT" --private-key "$PRIVATE_KEY" --consensus-heights "$CONSENSUS_HEIGHTS" --max-wait 20 --blocks-to-check 100 2>&1)"
-DEPLOY_EXIT=$?
-set -e
-echo "$DEPLOY_OUTPUT"
-
-if (( DEPLOY_EXIT != 0 )); then
-	if [[ "$DEPLOY_OUTPUT" == *"Program ID 'dark_optimistic_oracle.aleo' is already deployed"* ]]; then
-		echo "dark_optimistic_oracle.aleo already deployed; running upgrade."
-		run_leo_checked "upgrade" "Upgrade confirmed!" leo upgrade --yes --path . --devnet --broadcast --endpoint "$ENDPOINT" --private-key "$PRIVATE_KEY" --consensus-heights "$CONSENSUS_HEIGHTS" --max-wait 20 --blocks-to-check 100
-	else
-		echo "ERROR: deploy failed and did not match an auto-recoverable condition."
-		exit "$DEPLOY_EXIT"
-	fi
+status="$(program_status)"
+if [[ "$status" == "200" ]]; then
+  echo "[3/4] upgrade dark_optimistic_oracle.aleo"
+  run_leo_checked \
+    "upgrade" \
+    "Upgrade confirmed!" \
+    deploy \
+    leo upgrade "${common_args[@]}"
+elif [[ "$status" == "404" ]]; then
+  echo "[3/4] deploy dark_optimistic_oracle.aleo"
+  run_leo_checked \
+    "deploy" \
+    "Deployment confirmed!" \
+    deploy \
+    leo deploy "${common_args[@]}"
 else
-	if [[ "$DEPLOY_OUTPUT" != *"Deployment confirmed!"* ]]; then
-		echo "ERROR: deploy did not return confirmation marker: Deployment confirmed!"
-		exit 1
-	fi
+  echo "Unable to determine dark_optimistic_oracle.aleo state (HTTP ${status})."
+  exit 1
 fi
 
-echo "Waiting 10s before initialize..."
-/bin/sleep 10
-
-echo "[4/4] leo execute initialize"
-set +e
-INITIALIZE_OUTPUT="$(leo execute initialize --yes --devnet --broadcast --endpoint "$ENDPOINT" --private-key "$PRIVATE_KEY" --consensus-heights "$CONSENSUS_HEIGHTS" --max-wait 20 --blocks-to-check 100 2>&1)"
-INITIALIZE_EXIT=$?
-set -e
-echo "$INITIALIZE_OUTPUT"
-
-if (( INITIALIZE_EXIT != 0 )); then
-	echo "ERROR: initialize failed with exit code ${INITIALIZE_EXIT}."
-	exit "$INITIALIZE_EXIT"
-fi
-
-if [[ "$INITIALIZE_OUTPUT" == *"Execution confirmed!"* ]]; then
-	:
-elif [[ "$INITIALIZE_OUTPUT" == *"Transaction rejected."* ]]; then
-	echo "initialize was rejected on-chain (likely already initialized); continuing."
+fee_collector="$(
+  curl -fsS \
+    "${ENDPOINT}/${API_NETWORK}/program/dark_optimistic_oracle.aleo/mapping/fee_collector/0u8" ||
+    true
+)"
+if [[ -z "$fee_collector" || "$fee_collector" == "null" || "$fee_collector" == '"null"' ]]; then
+  echo "[4/4] initialize dark_optimistic_oracle.aleo"
+  run_leo_checked \
+    "initialize" \
+    "Execution confirmed!" \
+    execute \
+    leo execute initialize "${common_args[@]}"
 else
-	echo "ERROR: initialize did not return confirmation marker: Execution confirmed!"
-	exit 1
+  echo "[4/4] dark_optimistic_oracle.aleo is already initialized; skipping initialize."
 fi
 
-echo "Install completed successfully."
+echo "Install or upgrade completed successfully."

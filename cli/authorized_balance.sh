@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-#set -x
+set +x
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
@@ -27,6 +27,8 @@ fi
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 if [[ -z "$TOKEN_ID" ]]; then
     TOKEN_ID=$(leo run get_token_id 2>&1 | grep -Eo '[0-9]+field' | tail -n 1)
@@ -44,6 +46,5 @@ if [[ -z "$KEY" ]]; then
 fi
 
 # Use the captured key to query the balance (fixed program name format)
-RESULT=$(leo query program token_registry.aleo --mapping-value authorized_balances "$KEY")
-RESULT=$(echo "$RESULT" | grep -A 999 "Successfully" | tail -n +3)
+RESULT=$(leo -q query program token_registry.aleo --mapping-value authorized_balances "$KEY")
 echo "$RESULT"

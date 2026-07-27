@@ -1,95 +1,73 @@
-# Demo
+# Local devnet demo
 
-The full workflow of the protocol is described and tried.
+This guide exercises the complete protocol workflow on the local devnet. The
+included development accounts are disposable local-only identities. Their
+credentials are retained in the ignored `.env.private` file under `DEVNET_*`
+names and must never be reused on Testnet or Mainnet.
 
 ## Accounts and Roles
 
-Let's set up several roles and accounts for them. Let's then modify the `.env` file to contain these private keys and addresses (PROTOCOL_PK, PROTOCOL, 
-ASSERTER_PK, ASSERTER, DISPUTER_PK, DISPUTER, VOTER_1_PK, VOTER_1, VOTER_2_PK, VOTER_2, VOTER_3_PK, VOTER_3):
+Public addresses and local-network settings belong in `.env`. The corresponding
+private credentials belong in `.env.private` as `DEVNET_PRIVATE_KEY`,
+`DEVNET_PROTOCOL_PK`, `DEVNET_ASSERTER_PK`, `DEVNET_DISPUTER_PK`, and
+`DEVNET_VOTER_<n>_PK`.
 
 ### Owner
 
-The Owner will launch install `dark_optimistic_oracle.aleo` and take the role of fee collector (profit collector).
+The Owner installs `dark_optimistic_oracle.aleo` and acts as the protocol fee
+collector.
 
 In addition, the Owner shall receive the entire token supply that will ever be minted without the protocol operation.
 This account is responsible to distribute this supply to the Treasury, Founders, Investors, etc. This may
 involve distribution to programs that would enforce Vesting and other restrictions.
 
-As the file `/.env` contains the private key (disclosed for testing), we can get the Owner account details as follows:
+Load the public and private local configuration, then confirm the Owner address:
+
 ```zsh
 . ./.env
-leo account import $PRIVATE_KEY
+. ./.env.private
+leo account import "$DEVNET_PRIVATE_KEY"
 ```
-and we get:
+
+Leo reports the corresponding public address:
+
 ```
-  Private Key  APrivateKey1zkp8CZNn3yeCseEtxuVPbDCwSyhGW6yZKUYKfgXmcpoGPWH
-     View Key  AViewKey1mSnpFFC8Mj4fXbK5YiWgZ3mjiV8CxA79bYNa8ymUpTrw
-      Address  aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px
+Address  aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px
 ```
 
 This account in Amareleo (the development local node) shall further distribute funds to the other accounts.
 
 ### Asserter
 
-```zsh
-leo account new 
-```
-we get
-```
-  Private Key  APrivateKey1zkpBowzLhiXXTaiUwcdCGNTe2G4CCsHN4qSeaw9Z5DNNrv6
-     View Key  AViewKey1u4CUGNnSrq712SxfyWbnC1NswY2PjhGUzvmQProWRzeC
-      Address  aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca
-```
+The retained `DEVNET_ASSERTER_PK` corresponds to:
+
+`aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca`
 
 ### Disputer
 
-```zsh
-leo account new 
-```
-we get
-```
-  Private Key  APrivateKey1zkpFD3KggYarteFMYhRtQt9213yFYJgAgRL1Tcbxb58AQwt
-     View Key  AViewKey1dPzSsyswGjFXPNqeAeCtzXxpELUt7PZo7gsmxKjDt2q6
-      Address  aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52
-```
+The retained `DEVNET_DISPUTER_PK` corresponds to:
+
+`aleo1jf506dlywsr6kzxcp3spv8rnyf2sx4fstel2yezk57nchsep6yrqfu7k52`
 
 ### Voters
 
 #### Voter 1
 
-```zsh
-leo account new 
-```
-we get
-```
-  Private Key  APrivateKey1zkp3UiRhixB2D1UJ8FhoSvGR9Ux6Fx9n4cgMMQqx8sx6Zg5
-     View Key  AViewKey1qmZuCwmLutGLd53yM9MjEyzA2FNVZ3rAnJB18adq9MCv
-      Address  aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw
-```
+The retained `DEVNET_VOTER_1_PK` corresponds to:
+
+`aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw`
 
 #### Voter 2
 
-```zsh
-leo account new 
-```
-we get
-```
-  Private Key  APrivateKey1zkpGUXMJtMzYWVJSSmXqEJ6pcAYYwWoNfJyVXCUR4arNpfT
-     View Key  AViewKey1r8HJNQPV5wECsNyd5H5q5qqa3wSAQq3gKQN7H7q576Gx
-      Address  aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6
-```
+The retained `DEVNET_VOTER_2_PK` corresponds to:
+
+`aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6`
 
 #### Voter 3
 
-```zsh
-leo account new 
-```
-we get
-```
-  Private Key  APrivateKey1zkp5LGHwewLv4QW1ah9zUrGcwekRGcGYDBHaAXLkjokygLE
-     View Key  AViewKey1mT7MS2Hb2LSppmVbUQ87uB4G1BKxoWZpaUk6tUAr5hpk
-      Address  aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah
-```
+The retained `DEVNET_VOTER_3_PK` corresponds to:
+
+`aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah`
 
 ## Calling Workflow
 
@@ -112,7 +90,7 @@ For that, each account will need some Aleo credits, and some DOOR tokens.
 
 We can see how much the Owner account has in Aleo credits:
 ```zsh
-leo query program credits.aleo --mapping-value account $PROTOCOL
+leo -q query program credits.aleo --mapping-value account $PROTOCOL
 ```
 
 and how much in DOOR tokens (from the `cli` folder):
@@ -122,28 +100,32 @@ and how much in DOOR tokens (from the `cli` folder):
 
 Let's give one Aleo credit to each of the participants' accounts (from the top folder):
 ```zsh
-leo execute credits.aleo::transfer_public $ASSERTER 1_000_000u64 --broadcast --yes
-leo execute credits.aleo::transfer_public $DISPUTER 1_000_000u64 --broadcast --yes
-leo execute credits.aleo::transfer_public $VOTER_1 1_000_000u64 --broadcast --yes
-leo execute credits.aleo::transfer_public $VOTER_2 1_000_000u64 --broadcast --yes
-leo execute credits.aleo::transfer_public $VOTER_3 1_000_000u64 --broadcast --yes
+. ./.env
+. ./.env.private
+leo execute credits.aleo::transfer_public "$ASSERTER" 1_000_000u64 --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
+leo execute credits.aleo::transfer_public "$DISPUTER" 1_000_000u64 --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
+leo execute credits.aleo::transfer_public "$VOTER_1" 1_000_000u64 --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
+leo execute credits.aleo::transfer_public "$VOTER_2" 1_000_000u64 --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
+leo execute credits.aleo::transfer_public "$VOTER_3" 1_000_000u64 --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
 ```
 as well as DOOR tokens. The Asserter and Disputer need 100 public DOOR balance (from the top folder):
 ```zsh
 . ./.env
-leo execute token_registry.aleo::transfer_public $DOOR $ASSERTER 100_000_000u128 --broadcast --yes
-leo execute token_registry.aleo::transfer_public $DOOR $DISPUTER 100_000_000u128 --broadcast --yes
+. ./.env.private
+leo execute token_registry.aleo::transfer_public "$DOOR" "$ASSERTER" 100_000_000u128 --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
+leo execute token_registry.aleo::transfer_public "$DOOR" "$DISPUTER" 100_000_000u128 --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
 ```
 while the voters will get 1 private DOOR balance. For Voter 1 (from the top folder):
 ```zsh
 . ./.env
-leo execute token_registry.aleo::transfer_public_to_private $DOOR $VOTER_1 1_000_000u128 false --broadcast --yes
+. ./.env.private
+leo execute token_registry.aleo::transfer_public_to_private "$DOOR" "$VOTER_1" 1_000_000u128 false --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
 ```
 > **Note:** `snarkos developer scan` requires a local devnet node with record scanning support. The record shown below was captured from the Leo CLI output during execution. In production the record would be found via `snarkos developer scan` or your wallet.
 
 To see this record:
 ```zsh
-snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 showing the record:
 ```
@@ -151,23 +133,23 @@ showing the record:
 ```
 for Voter 2  (from the top folder):
 ```zsh
-leo execute token_registry.aleo::transfer_public_to_private $DOOR $VOTER_2 1_000_000u128 false --broadcast --yes
+leo execute token_registry.aleo::transfer_public_to_private "$DOOR" "$VOTER_2" 1_000_000u128 false --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
 ```
 To see this record:
 ```zsh
-snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 showing the record:
 ```
 {  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 3830038482030342871309118528480031319148988891247769800609217187153329494106group.public,  _version: 1u8.public}
 ```
 and for Voter 3  (from the top folder):
-```
-leo execute token_registry.aleo::transfer_public_to_private $DOOR $VOTER_3 1_000_000u128 false --broadcast --yes
+```zsh
+leo execute token_registry.aleo::transfer_public_to_private "$DOOR" "$VOTER_3" 1_000_000u128 false --private-key "$DEVNET_PRIVATE_KEY" --broadcast --yes
 ```
 To see this record:
 ```zsh
-snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 showing the record:
 ```
@@ -181,14 +163,14 @@ showing the record:
 
 The Asserter creates an assertion (from the `cli` folder):
 ```zsh
-./assertion.sh --private-key $ASSERTER_PK 123field 456field 789field 100_000_000u128 1_000_000u128 10000 20000
+./assertion.sh --private-key $DEVNET_ASSERTER_PK 123field 456field 789field 100_000_000u128 1_000_000u128 10000 20000
 ```
 
 ### Dispute the assertion
 
 Before the deadline to dispute, the Disputer can dispute the above assertion (from the `cli` folder):
 ```zsh
-./dispute.sh --private-key $DISPUTER_PK 123field 100_000_000u128
+./dispute.sh --private-key $DEVNET_DISPUTER_PK 123field 100_000_000u128
 ```
 
 ### Vote on the assertion
@@ -203,13 +185,13 @@ Each voter has to execute the following steps:
 
 Voter 1 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
-./voting_right.sh --private-key $VOTER_1_PK\
+./voting_right.sh --private-key $DEVNET_VOTER_1_PK\
   "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 7217685150051585053344308293369013275054479635381924146506947736298899083074group.public,  _version: 1u8.public}"\
   123field 1_000_000u128
 ```
 and check:
 ```
-snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingRight record:
 ```
@@ -218,14 +200,14 @@ which yields a the VotingRight record:
 
 Voter 2 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
-./voting_right.sh --private-key $VOTER_2_PK\
+./voting_right.sh --private-key $DEVNET_VOTER_2_PK\
   "{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 3830038482030342871309118528480031319148988891247769800609217187153329494106group.public,  _version: 1u8.public}"\
   123field 1_000_000u128
 ```
 
 and check:
 ```
-snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingRight record:
 ```
@@ -234,14 +216,14 @@ which yields a the VotingRight record:
 
 Voter 3 can first pay to obtain a voting right (from the `cli` folder):
 ```zsh
-./voting_right.sh --private-key $VOTER_3_PK\
+./voting_right.sh --private-key $DEVNET_VOTER_3_PK\
   "{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  amount: 1000000u128.private,  token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field.private,  external_authorization_required: false.private,  authorized_until: 4294967295u32.private,  _nonce: 1821246135261158736032948967207899841198532078809598323958750579941166808578group.public,  _version: 1u8.public}"\
   123field 1_000_000u128
 ```
 
 and check:
 ```
-snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingRight record:
 ```
@@ -252,12 +234,12 @@ which yields a the VotingRight record:
 
 Voter 1 will confirm the assertion (from the `cli` folder):
 ```zsh
-./confirm.sh --private-key $VOTER_1_PK\
+./confirm.sh --private-key $DEVNET_VOTER_1_PK\
   "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 1916322672018147382854707312202085214777761072431433941899130795808197826813group.public,  _version: 1u8.public}"
 ```
 and check:
 ```
-snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingReceipt record:
 ```
@@ -266,12 +248,12 @@ which yields a the VotingReceipt record:
 
 Voter 2 will confirm the assertion (from the `cli` folder):
 ```zsh
-./confirm.sh --private-key $VOTER_2_PK\
+./confirm.sh --private-key $DEVNET_VOTER_2_PK\
   "{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  assertion_id: 123field.private,  _nonce: 5145392843603465884638322010069398038155323606269887637432650732346778420445group.public,  _version: 1u8.public}"
 ```
 and check:
 ```
-snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingReceipt record:
 ```
@@ -280,12 +262,12 @@ which yields a the VotingReceipt record:
 
 Voter 3 will deny the assertion (from the `cli` folder):
 ```zsh
-./deny.sh --private-key $VOTER_3_PK\
+./deny.sh --private-key $DEVNET_VOTER_3_PK\
   "{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  assertion_id: 123field.private,  _nonce: 2228793572373916095403397020559608317613410552118554715065914632061237503421group.public,  _version: 1u8.public}"
 ```
 and check:
 ```
-snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 which yields a the VotingReceipt record:
 ```
@@ -294,18 +276,19 @@ which yields a the VotingReceipt record:
 
 ### See the voting result
 
-Let's mock the block height to simulate time advance. This is only for testing purposes. In production, we would have to wait for the
-dispute deadline to be reached (from the `cli` folder):
+Advance the local devnode by real blocks. On Testnet or Mainnet, wait for the
+required deadline instead (from the `cli` folder):
 ```zsh
 ./mock_block.sh 20000u32
 ```
 
 ### Asserter or Disputer collects award
 
-Since the asserter is right, he can collect the refund (from the `cli` folder):
+Since the assertion was disputed and confirmed, the asserter can collect both
+the refund and counterparty stake (from the `cli` folder):
 ```zsh
-./asserter_collect.sh --private-key $ASSERTER_PK\
-  100_000_000u128 123field
+./asserter_collect.sh --private-key $DEVNET_ASSERTER_PK\
+  123field 190_000_000u128
 ```
 and check:
 ```zsh
@@ -316,7 +299,7 @@ which yields the refund record:
 {
   token_id: 346688784394585735039324415800163929700021701423791533632764818774905958305field,
   account: aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca,
-  balance: 90000000u128,
+  balance: 190000000u128,
   authorized_until: 4294967295u32
 }
 ```
@@ -324,8 +307,8 @@ which yields the refund record:
 If the disputer were right, he would collect the refund and award (from the `cli` folder):
 
 ```zsh
-./disputer_collect.sh --private-key $DISPUTER_PK\
-  100_000_000u128 123field
+./disputer_collect.sh --private-key $DEVNET_DISPUTER_PK\
+  123field 190_000_000u128
 ```
 and check:
 ```zsh
@@ -354,13 +337,13 @@ We have to pre-calculate the amount of the award, which is $1,000,000 * (100 + 1
 
 Voter 1 can collect (from the `cli` folder):
 ```zsh
-./voter_collect.sh --private-key $VOTER_1_PK\
+./voter_collect.sh --private-key $DEVNET_VOTER_1_PK\
   1_010_000u128\
   "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 8401380187321425398524037599072863595607808281814913320810389875998654131179group.public,  _version: 1u8.public}"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 which yields refund and voting award record:
 ```zsh
@@ -369,13 +352,13 @@ which yields refund and voting award record:
 
 Voter 2 can collect (from the `cli` folder):
 ```zsh
-./voter_collect.sh --private-key $VOTER_2_PK\
+./voter_collect.sh --private-key $DEVNET_VOTER_2_PK\
   1_010_000u128\
   "{  owner: aleo1u9xrpgxxf65rlp5y0czqekqte2tg5caxh3t6v5gn7jw0uex3w59sg4q5l6.private,  assertion_id: 123field.private,  outcome: true.private,  _nonce: 159924143601799761962011034886484301652097082187720269676620825591757827820group.public,  _version: 1u8.public}"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key $VOTER_2_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_2_PK --endpoint $ENDPOINT --last 10
 ```
 which yields refund and voting award record:
 ```zsh
@@ -384,13 +367,13 @@ which yields refund and voting award record:
 
 Voter 3 can try to collect (from the `cli` folder):
 ```zsh
-./voter_collect.sh --private-key $VOTER_3_PK\
+./voter_collect.sh --private-key $DEVNET_VOTER_3_PK\
   1_010_000u128\
   "{  owner: aleo1p0nvzd702fha2h44zz7k48u7982mgd3sjlw2cq2ptnc32pg8dgzqc6p3ah.private,  assertion_id: 123field.private,  outcome: false.private,  _nonce: 656551087031393785562663902817845772501217325905334155737251563023111273885group.public,  _version: 1u8.public}"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key $VOTER_3_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_3_PK --endpoint $ENDPOINT --last 10
 ```
 which yields nothing for refund and voting award, because of the incorrect voting - he got slashed:
 ```zsh
@@ -404,13 +387,13 @@ no matter how many times we try this - the transaction failed.
 
 If the voter did not vote on time they can get a refund for the VotingRight (from the `cli` folder):
 ```zsh
-./voter_refund.sh --private-key $VOTER_1_PK\
+./voter_refund.sh --private-key $DEVNET_VOTER_1_PK\
   1_000_000u128\
   "{  owner: aleo1azkl6rf3x5t3qk48rfsprxdkx6m7e33un9qpq0aqu036rzpm9qyq596vzw.private,  assertion_id: 123field.private,  _nonce: 1916322672018147382854707312202085214777761072431433941899130795808197826813group.public,  _version: 1u8.public}"
 ```
 and check:
 ```zsh
-snarkos developer scan --network 1 --private-key $VOTER_1_PK --endpoint $ENDPOINT --last 10
+snarkos developer scan --network 1 --private-key $DEVNET_VOTER_1_PK --endpoint $ENDPOINT --last 10
 ```
 but obviously, since Voter 1 actually voted, he cannot get a refund.
 

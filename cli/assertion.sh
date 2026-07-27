@@ -1,9 +1,11 @@
 #!/bin/zsh
 set -e
-#set -x
+set +x
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 # Convert NETWORK parameter from .env
 if [[ "$NETWORK" == "mainnet" ]]; then
@@ -43,7 +45,7 @@ if [[ $# -eq 0 ]] || [[ $# -gt 9 ]]; then
 fi
 
 # Get the latest block height
-BLOCK_HEIGHT=$(leo query block --latest-height 2>&1 | grep -Eo '[0-9]+' | tail -n 1)
+BLOCK_HEIGHT=$(leo -q query block --latest-height 2>&1 | grep -Eo '[0-9]+' | tail -n 1)
 if [[ -z "$BLOCK_HEIGHT" ]]; then
     echo "Error: Could not parse latest block height from leo output."
     exit 1

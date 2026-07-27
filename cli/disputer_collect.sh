@@ -1,9 +1,11 @@
 #!/bin/zsh
 set -e
-#set -x
+set +x
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 # Convert NETWORK parameter from .env
 if [[ "$NETWORK" == "mainnet" ]]; then
@@ -17,7 +19,7 @@ fi
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
-    echo "Usage: $0 [--private-key <key>] <cost> <id>"
+    echo "Usage: $0 [--private-key <key>] <id> <payout_amount>"
     echo "  --private-key: Optional private key for signing (string)"
     echo "  cost: The anticipated cost of the assertion (in DOOR tokens) (u128)"
     echo "  id: The ID of the assertion (field)"

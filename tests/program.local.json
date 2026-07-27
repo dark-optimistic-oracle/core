@@ -1,0 +1,15 @@
+{
+  "program": "dark_optimistic_oracle.aleo",
+  "version": "0.1.0",
+  "description": "Hermetic local-test manifest",
+  "license": "Apache 2.0",
+  "leo": "4.3.4",
+  "dependencies": [
+    {
+      "name": "token_registry.aleo",
+      "location": "local",
+      "network": null,
+      "path": "../token-registry-workaround"
+    }
+  ]
+}

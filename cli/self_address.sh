@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-# set -x
+set +x
 
 # Help message
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
@@ -10,6 +10,8 @@ fi
 
 cd ..
 . ./.env
+. ./.env.private
+PRIVATE_KEY="${DEVNET_PRIVATE_KEY:-}"
 
 # Run balance_key and capture the output - remove trailing 'field' and clean whitespace
 RESULT=$(leo run self_address)
