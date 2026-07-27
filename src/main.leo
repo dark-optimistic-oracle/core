@@ -1,40 +1,38 @@
 import token_registry.aleo;
 
+const DOOR_TOKEN_ID: field = 17235612283251326583536974293363256992451820371731919189503231730609724436387field;
+const ZERO_ADDRESS: address = aleo1ezamst4pjgj9zfxqq0fwfj8a4cjuqndmasgata3hggzqygggnyfq6kmyd4; // Fix this!!!
+const VOTER_REWARD_PER1000: u128 = 10u128; // 1% of the voter fee; minted privately
+const ASSERTER_PROTOCOL_FEE_PER1000: u128 = 100u128; // 10% of the asserter deposit
+
+// Assertion details - all public
+struct Assertion {
+    id: field,
+    title: field,
+    content_hash: field,
+    cost: u128, // assuming asserter and disputer deposit are the same
+    voter_stake: u128,
+    dispute_deadline_block_height: u32,
+    voting_deadline_block_height: u32,
+}
+
 program dark_optimistic_oracle.aleo {
     // The following part is built on the pattern of secret voting,
     // however it is modified to be suitable for UMA-like assertions,
     // which have deadlines for dispute and dispute resolution.
-
-    const DOOR_TOKEN_ID: field = 17235612283251326583536974293363256992451820371731919189503231730609724436387field;
-
-    const ZERO_ADDRESS: address = aleo1ezamst4pjgj9zfxqq0fwfj8a4cjuqndmasgata3hggzqygggnyfq6kmyd4; // Fix this!!!
-
-    const VOTER_REWARD_PER1000: u128 = 10u128; // 1% of the voter fee; minted privately
-    const ASSERTER_PROTOCOL_FEE_PER1000: u128 = 100u128; // 10% of the asserter deposit
 
     // Leo 4 upgrade policy: only this admin can deploy upgrades.
     @admin(address="aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px")
     constructor() {}
 
     mapping fees_collected: u8 => u128; // Total fees collected stored in the 0-th index
-
     mapping fee_collector: u8 => address; // owner (fee collector) of the contract stored in the 0-th index
-
     mapping current_mock_block_height: u8 => u32; // mock block height for testing purposes stored in the 0-th index
-
-    // Assertion details - all public
-    struct Assertion {
-        id: field,
-        title: field,
-        content_hash: field,
-        cost: u128, // assuming asserter and disputer deposit are the same
-        voter_stake: u128,
-        dispute_deadline_block_height: u32,
-        voting_deadline_block_height: u32,
-    }
-
-    // Save all assertions' info publicly.
     mapping assertions: field => Assertion; // assertionId => Assertion
+    mapping asserters: field => address; // assertionId => asserter
+    mapping disputers: field => address; // assertionId => disputer
+    mapping confirm_votes: field => u64; // assertionId => confirming votes
+    mapping deny_votes: field => u64; // assertionId => disputing votes
 
     // Deposits to vote (private)
     record VotingRight {
@@ -48,14 +46,6 @@ program dark_optimistic_oracle.aleo {
         assertion_id: field,
         outcome: bool,
     }
-
-    mapping asserters: field => address; // assertionId => asserter
-
-    mapping disputers: field => address; // assertionId => disputer
-
-    mapping confirm_votes: field => u64; // assertionId => confirming votes
-
-    mapping deny_votes: field => u64; // assertionId => disputing votes
 
     fn self_address() -> address {
         return self.address;
@@ -122,13 +112,13 @@ program dark_optimistic_oracle.aleo {
 
         return final {
             assert_eq(Mapping::get_or_use(asserters, assertion.id, ZERO_ADDRESS), ZERO_ADDRESS); // assertion does not exist yet
-            f.run();
             Mapping::set(asserters, assertion.id, asserter);
             Mapping::set(confirm_votes, assertion.id, 0u64); // no confirmations yet
             Mapping::set(deny_votes, assertion.id, 0u64); // no disputes yet
 
             Mapping::set(assertions, assertion.id, assertion); // store the assertion
             Mapping::set(fees_collected, 0u8, Mapping::get_or_use(fees_collected, 0u8, 0u128) + assertion.cost * ASSERTER_PROTOCOL_FEE_PER1000 / 1000u128);
+            f.run();
         };
     }
 
@@ -142,15 +132,15 @@ program dark_optimistic_oracle.aleo {
             let mock: u32 = Mapping::get_or_use(current_mock_block_height, 0u8, 0u32); // assertion must exist
             assert(block.height+mock <= assertion.dispute_deadline_block_height);
             assert_eq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS);
-            f.run();
             Mapping::set(disputers, assertion_id, disputer);
+            f.run();
             // No fee is collected by the protocol for disputes.
         };
     }
 
     // Create a new ticket to vote with.
     fn new_voting_right(
-        private payment: token_registry.aleo::Token,
+        payment: token_registry.aleo::Token,
         public assertion_id: field,
         public voter_stake: u128
     ) -> (VotingRight, token_registry.aleo::Token, Final) {
@@ -168,7 +158,7 @@ program dark_optimistic_oracle.aleo {
     }
 
     // Vote privately to agree with a proposal.
-    fn confirm(private v: VotingRight) -> (VotingReceipt, Final) {
+    fn confirm(v: VotingRight) -> (VotingReceipt, Final) {
         // Finalize this vote
         let assertion_id: field = v.assertion_id;
         return (
@@ -186,7 +176,7 @@ program dark_optimistic_oracle.aleo {
     }
 
     // Vote privately to disagree with a proposal.
-    fn deny(private v: VotingRight) -> (VotingReceipt, Final) {
+    fn deny(v: VotingRight) -> (VotingReceipt, Final) {
         // Finalize this vote.
         let assertion_id: field = v.assertion_id;
         return (
@@ -203,7 +193,7 @@ program dark_optimistic_oracle.aleo {
         );
     }
 
-    fn collect_voting_award(public award_amount: u128, private r: VotingReceipt) -> (token_registry.aleo::Token, Final) {
+    fn collect_voting_award(public award_amount: u128, r: VotingReceipt) -> (token_registry.aleo::Token, Final) {
         // No need: assert(self.caller == r.owner);
         let owner: address = r.owner;
         let assertion_id: field = r.assertion_id;
@@ -224,7 +214,7 @@ program dark_optimistic_oracle.aleo {
         );
     }
 
-    fn refund_voting_right(public refund_amount: u128, private v: VotingRight) -> (token_registry.aleo::Token, Final) {
+    fn refund_voting_right(public refund_amount: u128, v: VotingRight) -> (token_registry.aleo::Token, Final) {
         // No need: assert(self.caller == r.owner);
         let owner: address = v.owner;
         let assertion_id: field = v.assertion_id;

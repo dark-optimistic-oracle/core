@@ -28,6 +28,32 @@ It deploys `dark_optimistic_oracle.aleo`, and if the program is already deployed
 It also verifies on-chain confirmation markers for deploy/upgrade and initialize, and exits on unexpected outcomes.
 If initialize is rejected on-chain during a rerun (already initialized), the script treats that as a non-fatal condition and continues.
 
+The local devnet install uses `../token-registry-workaround`. Both project-owned
+programs have an explicit `@admin` constructor bound to
+`aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px`, so future
+deployments can be upgraded only by that admin.
+
+## Aleo testnet
+
+Public testnet already provides the canonical `token_registry.aleo`; do not deploy
+the local workaround there. Before deployment, replace the public local-devnet
+`@admin` address in `src/main.leo` with a secure, user-controlled testnet address.
+Set `NETWORK=testnet`, the matching funded `PRIVATE_KEY`, and `PROTOCOL` in
+`.env`, then run:
+
+```zsh
+./deploy_testnet.sh
+```
+
+The script refuses to deploy with the known devnet admin. Otherwise it builds
+against the canonical registry, deploys and initializes a new
+oracle, or performs an admin-authorized upgrade when the oracle already exists.
+It fails closed if the official API cannot determine the current program state.
+
+With Leo 4.3.4, the initial deployment was estimated at `21.609156` credits,
+excluding the subsequent `initialize` execution. Confirm the current estimate
+and fund the deployer before broadcasting.
+
 ## Demo
 
 The demo of the complete workflow with commands that are actually executed is [here](./demo/README.md).
