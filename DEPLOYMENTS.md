@@ -23,7 +23,7 @@ query them with `leo -q query` before relying on these values.
 | Program | Deterministic program address | Testnet state |
 | --- | --- | --- |
 | `dark_optimistic_oracle.aleo` | `aleo1nyflwg9mjfkfp2n9mtng0snxj9qrhahkjxp5l9pag4zxm3qrssrqwv8tml` | Deployed at edition `0` and initialized. |
-| `token_registry.aleo` | Canonical Aleo program; not deployed or administered by this project. | Existing public dependency, edition `1` when deployment was performed. |
+| `token_registry.aleo` | `aleo1m50rc7x4cgsr5y8h2s3d6f7rzm5tvz5zqcz7ak55gmkv76pgu5qsuyq0k7` | Canonical public dependency, edition `1` when deployment was performed; not deployed or administered by this project. |
 
 Program addresses belong to program IDs and have no user-held private key. The
 oracle program address is the token-registry administrator/external-party value
