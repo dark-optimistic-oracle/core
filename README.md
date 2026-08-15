@@ -60,6 +60,10 @@ programs have an explicit `@admin` constructor bound to
 `aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px`, so future
 deployments can be upgraded only by that admin.
 
+Oracle initialization, the initial treasury mint, and fee collection are bound
+to the same administrator, preventing another account from initializing a newly
+deployed instance first.
+
 Run the hermetic Leo unit tests without starting a devnet:
 
 ```zsh
@@ -96,6 +100,12 @@ The shared oracle is now deployed and initialized on Testnet. See
 [DEPLOYMENTS.md](DEPLOYMENTS.md) for its program address, administrator,
 accepted transaction IDs, and the distinct local-devnet account roles. The
 combined oracle-plus-market deployment is recorded in the `predmkt` repository.
+
+New voting rights may be purchased only until 10 blocks before the voting
+deadline. That final interval is vote-only. Voting records and a private fee can
+hide record ownership and the fee payer, but the `confirm`/`deny` transition and
+aggregate tally remain public. See [AUDIT.md](AUDIT.md) for dated findings,
+remediation, residual risks, and verification evidence.
 
 Deployment and initialization fees depend on the compiled program and current
 network rules. Fund the deployer before broadcasting and retain enough public

@@ -10,6 +10,9 @@ const MIN_VOTER_STAKE: u128 = 100u128; // Keeps the voter-reward calculation non
 const MAX_BONDED_AMOUNT: u128 = 170141183460469231731687303715884105u128; // floor(u128::MAX / 2000)
 const MIN_DISPUTE_WINDOW_BLOCKS: u32 = 10u32;
 const MIN_VOTING_WINDOW_BLOCKS: u32 = 10u32;
+// Development admin. Public deployment scripts replace this together with the
+// constructor administrator so initialization and upgrades share one authority.
+const PROTOCOL_ADMIN: address = aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px;
 
 // Assertion details - all public
 struct Assertion {
@@ -42,6 +45,14 @@ fn calculate_assertion_award_logic(assertion_cost: u128, disputed: bool) -> u128
 
 fn assertion_is_newer_than_logic(creation_height: u32, minimum_creation_height: u32) -> bool {
     return creation_height > minimum_creation_height;
+}
+
+fn caller_is_protocol_admin_logic(caller: address) -> bool {
+    return caller == PROTOCOL_ADMIN;
+}
+
+fn vote_right_buy_is_open_logic(current_height: u32, voting_deadline: u32) -> bool {
+    return current_height + MIN_VOTING_WINDOW_BLOCKS <= voting_deadline;
 }
 
 program dark_optimistic_oracle.aleo {
@@ -100,6 +111,14 @@ program dark_optimistic_oracle.aleo {
         return assertion_is_newer_than_logic(creation_height, minimum_creation_height);
     }
 
+    fn caller_is_protocol_admin(public caller: address) -> bool {
+        return caller_is_protocol_admin_logic(caller);
+    }
+
+    fn vote_right_buy_is_open(public current_height: u32, public voting_deadline: u32) -> bool {
+        return vote_right_buy_is_open_logic(current_height, voting_deadline);
+    }
+
     fn balance_key(public token_id: field, public account: address) -> public field {
         let owner: token_registry.aleo::TokenOwner = token_registry.aleo::TokenOwner {
             token_id: token_id,
@@ -109,6 +128,8 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn initialize() -> Final {
+        let initializer: address = self.signer;
+        assert(caller_is_protocol_admin_logic(initializer));
         let name: u128 = 355052645276405935372531202689035365u128; // "Dark Opt Oracle" ascii encoded
         let symbol: u128 = 1146048338u128; // "DOOR" ascii encoded
         let decimals: u8 = 6u8;
@@ -128,12 +149,11 @@ program dark_optimistic_oracle.aleo {
 
         // Distribute supply intended for treasury.
         let supply: u128 = max_supply / 10u128; // 10% of the supply is minted to the treasury. The rest is reserved for potential inflation.
-        let f2: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, self.caller, supply, 0u32);
+        let f2: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, PROTOCOL_ADMIN, supply, 0u32);
         // The remaining registered supply is reserved for protocol-enforced rewards.
-        let caller: address = self.caller;
 
         return final {
-            Mapping::set(fee_collector, 0u8, caller);
+            Mapping::set(fee_collector, 0u8, PROTOCOL_ADMIN);
             f1.run();
             f2.run();
         };
@@ -195,13 +215,16 @@ program dark_optimistic_oracle.aleo {
                 let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
                 assert_eq(assertion.voter_stake, voter_stake);
                 assert_neq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS);
-                assert(block.height <= assertion.voting_deadline_block_height);
+                // Keep the last minimum voting window vote-only. This prevents
+                // buying new influence after observing the final public tally.
+                assert(vote_right_buy_is_open_logic(block.height, assertion.voting_deadline_block_height));
                 f.run();
             }
         );
     }
 
-    // Vote privately to agree with a proposal.
+    // Consume a private voting right to agree with a proposal. The record owner
+    // is private, but the transition direction and aggregate count are public.
     fn confirm(v: VotingRight) -> (VotingReceipt, Final) {
         // Finalize this vote
         let assertion_id: field = v.assertion_id;
@@ -218,7 +241,8 @@ program dark_optimistic_oracle.aleo {
         );
     }
 
-    // Vote privately to disagree with a proposal.
+    // Consume a private voting right to disagree with a proposal. The record
+    // owner is private, but the transition direction and aggregate count are public.
     fn deny(v: VotingRight) -> (VotingReceipt, Final) {
         // Finalize this vote.
         let assertion_id: field = v.assertion_id;

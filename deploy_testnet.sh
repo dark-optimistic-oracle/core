@@ -69,8 +69,10 @@ mkdir -p "$DEPLOY_ROOT/src" "$DEPLOY_ROOT/.aleo"
 cp "$SCRIPT_DIR/program.json" "$DEPLOY_ROOT/program.json"
 cp "$SCRIPT_DIR/src/main.leo" "$DEPLOY_ROOT/src/main.leo"
 perl -0pi -e "s/\@admin\\(address\\s*=\\s*\"aleo1[a-z0-9]{58}\"\\)/\@admin(address=\"${PROTOCOL}\")/g" "$DEPLOY_ROOT/src/main.leo"
-if ! rg -q "@admin\\(address=\"${PROTOCOL}\"\\)" "$DEPLOY_ROOT/src/main.leo"; then
-  echo "Failed to set the secure testnet upgrade administrator."
+perl -0pi -e "s/const PROTOCOL_ADMIN: address = aleo1[a-z0-9]{58};/const PROTOCOL_ADMIN: address = ${PROTOCOL};/g" "$DEPLOY_ROOT/src/main.leo"
+if ! rg -q "@admin\\(address=\"${PROTOCOL}\"\\)" "$DEPLOY_ROOT/src/main.leo" ||
+  ! rg -q "const PROTOCOL_ADMIN: address = ${PROTOCOL};" "$DEPLOY_ROOT/src/main.leo"; then
+  echo "Failed to set the secure testnet upgrade and initialization administrator."
   exit 1
 fi
 

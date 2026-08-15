@@ -51,6 +51,30 @@ program test_oracle.aleo {
     }
 
     @test
+    fn development_admin_is_authorized() {
+        assert(dark_optimistic_oracle.aleo::caller_is_protocol_admin(
+            aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px
+        ));
+    }
+
+    @test
+    fn unrelated_account_is_not_admin() {
+        assert(!dark_optimistic_oracle.aleo::caller_is_protocol_admin(
+            aleo1qk0xj2xcnx5n6f2d7wqjylf7ryda4gzypfcfh2mhqtynhz67x5xsswvcca
+        ));
+    }
+
+    @test
+    fn right_buy_open_at_cutoff() {
+        assert(dark_optimistic_oracle.aleo::vote_right_buy_is_open(100u32, 110u32));
+    }
+
+    @test
+    fn right_buy_closed_after_cutoff() {
+        assert(!dark_optimistic_oracle.aleo::vote_right_buy_is_open(101u32, 110u32));
+    }
+
+    @test
     @should_fail
     fn rejects_too_small_voter_stake() {
         dark_optimistic_oracle.aleo::calculate_voter_award(99u128);
