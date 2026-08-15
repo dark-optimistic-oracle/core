@@ -64,7 +64,7 @@ Verification time: 2026-08-15 07:04 EDT (computer local time).
 
 | Finding | Disposition | Remediation and remaining risk |
 | --- | --- | --- |
-| CORE-2026-08-15-01 | Fixed | `initialize` now requires `self.signer` to equal the configured protocol administrator. The initial treasury mint and fee collector are bound to that same address. Public deployment replaces both the Leo constructor administrator and initialization constant in a temporary build tree. |
+| CORE-2026-08-15-01 | Fixed | `initialize` now requires `std::ctx::signer()` to equal the configured protocol administrator. The initial treasury mint and fee collector are bound to that same address. Public deployment replaces both the Leo constructor administrator and initialization constant in a temporary build tree. |
 | CORE-2026-08-15-02 | Mitigated | Both frontends now request private fees for the record-based voting lifecycle and describe the privacy boundary accurately. Record ownership and the fee payer can be hidden, but the `confirm`/`deny` function and aggregate tallies remain public by protocol design. |
 | CORE-2026-08-15-03 | Mitigated | Buying a new voting right now closes 10 blocks before the voting deadline, leaving a vote-only interval. Strategic rights acquired earlier and public live tallies remain an economic-design risk. |
 | CORE-2026-08-15-04 | Partially fixed | Authorization and right-purchase boundary helpers and negative tests were added; 14/14 hermetic Leo tests pass. A fresh stateful local-devnet adversarial run remains required before a production release. |
@@ -85,7 +85,9 @@ Verification time: 2026-08-15 07:04 EDT (computer local time).
 - Public deployment builds substitute one identical administrator into both
   upgrade and initialization authorization and fail if either substitution is
   absent.
-- Leo 4.3.4 compilation and 14/14 oracle tests passed.
+- Leo 4.4.1 compilation and 14/14 oracle tests passed after migrating to its
+  `std::ctx` syntax. The release asset checksum matched the official published
+  SHA-256 before use.
 - The combined project compiled the oracle and market for devnet, Testnet, and
   Mainnet in dry-run mode; no dry run signed or broadcast a transaction.
 - The live pre-upgrade Testnet snapshot showed oracle edition 0, the intended

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "license": "Apache 2.0",
-  "leo": "4.3.4",
+  "leo": "4.4.1",
   "dependencies": [
     {
       "name": "token_registry.aleo",

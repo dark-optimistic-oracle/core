@@ -87,7 +87,7 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn self_address() -> address {
-        return self.address;
+        return std::ctx::addr();
     }
 
     fn get_token_id() -> field {
@@ -128,19 +128,19 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn initialize() -> Final {
-        let initializer: address = self.signer;
+        let initializer: address = std::ctx::signer();
         assert(caller_is_protocol_admin_logic(initializer));
         // Preserve the original finalize input while requiring a direct call by
         // the same administrator. Aleo upgrades require finalize interfaces to
         // remain compatible with the deployed edition.
-        let caller: address = self.caller;
+        let caller: address = std::ctx::caller();
         assert(caller_is_protocol_admin_logic(caller));
         let name: u128 = 355052645276405935372531202689035365u128; // "Dark Opt Oracle" ascii encoded
         let symbol: u128 = 1146048338u128; // "DOOR" ascii encoded
         let decimals: u8 = 6u8;
         let max_supply: u128 = 10_000_000_000_000_000u128;
         let external_authorization_required: bool = false;
-        let external_authorization_party: address = self.address;
+        let external_authorization_party: address = std::ctx::addr();
 
         let f1: Final = token_registry.aleo::register_token(
             DOOR_TOKEN_ID,
@@ -168,8 +168,8 @@ program dark_optimistic_oracle.aleo {
     // Anyone can make an assertion.
     fn create_assertion(public assertion: Assertion) -> Final {
         // Burn the cost of the assertion.
-        let f: Final = token_registry.aleo::burn_public(DOOR_TOKEN_ID, self.caller, assertion.cost);
-        let asserter: address = self.caller;
+        let f: Final = token_registry.aleo::burn_public(DOOR_TOKEN_ID, std::ctx::caller(), assertion.cost);
+        let asserter: address = std::ctx::caller();
 
         return final {
             assert_eq(Mapping::get_or_use(asserters, assertion.id, ZERO_ADDRESS), ZERO_ADDRESS); // assertion does not exist yet
@@ -177,10 +177,10 @@ program dark_optimistic_oracle.aleo {
             assert(assertion.cost <= MAX_BONDED_AMOUNT);
             assert(assertion.voter_stake >= MIN_VOTER_STAKE);
             assert(assertion.voter_stake <= MAX_BONDED_AMOUNT);
-            assert(assertion.dispute_deadline_block_height >= block.height + MIN_DISPUTE_WINDOW_BLOCKS);
+            assert(assertion.dispute_deadline_block_height >= std::ctx::block_height() + MIN_DISPUTE_WINDOW_BLOCKS);
             assert(assertion.voting_deadline_block_height >= assertion.dispute_deadline_block_height + MIN_VOTING_WINDOW_BLOCKS);
             Mapping::set(asserters, assertion.id, asserter);
-            Mapping::set(assertion_created_at, assertion.id, block.height);
+            Mapping::set(assertion_created_at, assertion.id, std::ctx::block_height());
             Mapping::set(confirm_votes, assertion.id, 0u64); // no confirmations yet
             Mapping::set(deny_votes, assertion.id, 0u64); // no disputes yet
 
@@ -192,12 +192,12 @@ program dark_optimistic_oracle.aleo {
 
     fn dispute_assertion(public assertion_id: field, public assertion_cost: u128) -> Final {
         // Burn the cost of the assertion.
-        let f: Final = token_registry.aleo::burn_public(DOOR_TOKEN_ID, self.caller, assertion_cost);
-        let disputer: address = self.caller;
+        let f: Final = token_registry.aleo::burn_public(DOOR_TOKEN_ID, std::ctx::caller(), assertion_cost);
+        let disputer: address = std::ctx::caller();
         return final {
             let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
             assert(assertion.cost == assertion_cost);
-            assert(block.height <= assertion.dispute_deadline_block_height);
+            assert(std::ctx::block_height() <= assertion.dispute_deadline_block_height);
             assert_eq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS);
             Mapping::set(disputers, assertion_id, disputer);
             f.run();
@@ -222,7 +222,7 @@ program dark_optimistic_oracle.aleo {
                 assert_neq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS);
                 // Keep the last minimum voting window vote-only. This prevents
                 // buying new influence after observing the final public tally.
-                assert(vote_right_buy_is_open_logic(block.height, assertion.voting_deadline_block_height));
+                assert(vote_right_buy_is_open_logic(std::ctx::block_height(), assertion.voting_deadline_block_height));
                 f.run();
             }
         );
@@ -238,7 +238,7 @@ program dark_optimistic_oracle.aleo {
             final {
                 let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
                 assert_neq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS); // must be disputed;
-                assert(block.height <= assertion.voting_deadline_block_height);
+                assert(std::ctx::block_height() <= assertion.voting_deadline_block_height);
                 // Publicly increment the number of agree votes.
                 let current: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
                 Mapping::set(confirm_votes, assertion_id, current + 1u64);
@@ -256,7 +256,7 @@ program dark_optimistic_oracle.aleo {
             final {
                 let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
                 assert_neq(Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS), ZERO_ADDRESS); // Must be disputed;
-                assert(block.height <= assertion.voting_deadline_block_height);
+                assert(std::ctx::block_height() <= assertion.voting_deadline_block_height);
                 // Publicly increment the number of disagree votes.
                 let current: u64 = Mapping::get_or_use(deny_votes, assertion_id, 0u64);
                 Mapping::set(deny_votes, assertion_id, current + 1u64);
@@ -265,7 +265,7 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn collect_voting_award(public award_amount: u128, r: VotingReceipt) -> (token_registry.aleo::Token, Final) {
-        // No need: assert(self.caller == r.owner);
+        // No need: assert(std::ctx::caller() == r.owner);
         let owner: address = r.owner;
         let assertion_id: field = r.assertion_id;
         let outcome: bool = r.outcome;
@@ -274,7 +274,7 @@ program dark_optimistic_oracle.aleo {
             award,
             final {
                 let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
-                assert(block.height > assertion.voting_deadline_block_height);
+                assert(std::ctx::block_height() > assertion.voting_deadline_block_height);
                 let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
                 let n: u64 = Mapping::get_or_use(deny_votes, assertion_id, 0u64);
                 assert_eq(outcome, vote_accepts_assertion_logic(y, n));
@@ -285,7 +285,7 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn refund_voting_right(public refund_amount: u128, v: VotingRight) -> (token_registry.aleo::Token, Final) {
-        // No need: assert(self.caller == r.owner);
+        // No need: assert(std::ctx::caller() == r.owner);
         let owner: address = v.owner;
         let assertion_id: field = v.assertion_id;
         let (refund, f) : (token_registry.aleo::Token, Final) = token_registry.aleo::mint_private(DOOR_TOKEN_ID, owner, refund_amount, false, 0u32);
@@ -293,7 +293,7 @@ program dark_optimistic_oracle.aleo {
             refund,
             final {
                 let assertion: Assertion = Mapping::get(assertions, assertion_id); // may fail in case assertion does not exist;
-                assert(block.height > assertion.voting_deadline_block_height);
+                assert(std::ctx::block_height() > assertion.voting_deadline_block_height);
                 assert(refund_amount == assertion.voter_stake);
                 f.run();
             }
@@ -301,8 +301,8 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn collect_assertion_award(public assertion_id: field, public payout_amount: u128) -> Final {
-        let f: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, self.caller, payout_amount, 0u32);
-        let caller: address = self.caller;
+        let f: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, std::ctx::caller(), payout_amount, 0u32);
+        let caller: address = std::ctx::caller();
         return final {
             let assertion: Assertion = Mapping::get(assertions, assertion_id);
             assert_eq(caller, Mapping::get(asserters, assertion_id));
@@ -311,10 +311,10 @@ program dark_optimistic_oracle.aleo {
             let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
             let n: u64 = Mapping::get_or_use(deny_votes, assertion_id, 0u64);
             if disputer == ZERO_ADDRESS {
-                assert(block.height > assertion.dispute_deadline_block_height);
+                assert(std::ctx::block_height() > assertion.dispute_deadline_block_height);
                 assert_eq(payout_amount, calculate_assertion_award_logic(assertion.cost, false));
             } else {
-                assert(block.height > assertion.voting_deadline_block_height);
+                assert(std::ctx::block_height() > assertion.voting_deadline_block_height);
                 assert(vote_accepts_assertion_logic(y, n));
                 assert_eq(payout_amount, calculate_assertion_award_logic(assertion.cost, true));
             }
@@ -324,14 +324,14 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn collect_dispute_award(public assertion_id: field, public payout_amount: u128) -> Final {
-        let f: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, self.caller, payout_amount, 0u32);
-        let caller: address = self.caller;
+        let f: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, std::ctx::caller(), payout_amount, 0u32);
+        let caller: address = std::ctx::caller();
         return final {
             let assertion: Assertion = Mapping::get(assertions, assertion_id);
             let disputer: address = Mapping::get(disputers, assertion_id);
             assert_eq(caller, disputer);
             assert(!Mapping::get_or_use(disputer_awards_claimed, assertion_id, false));
-            assert(block.height > assertion.voting_deadline_block_height);
+            assert(std::ctx::block_height() > assertion.voting_deadline_block_height);
             let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
             let n: u64 = Mapping::get_or_use(deny_votes, assertion_id, 0u64);
             assert(!vote_accepts_assertion_logic(y, n));
@@ -360,10 +360,10 @@ program dark_optimistic_oracle.aleo {
 
             let disputer: address = Mapping::get_or_use(disputers, assertion_id, ZERO_ADDRESS);
             if disputer == ZERO_ADDRESS {
-                assert(block.height > assertion.dispute_deadline_block_height);
+                assert(std::ctx::block_height() > assertion.dispute_deadline_block_height);
                 assert(outcome);
             } else {
-                assert(block.height > assertion.voting_deadline_block_height);
+                assert(std::ctx::block_height() > assertion.voting_deadline_block_height);
                 let y: u64 = Mapping::get_or_use(confirm_votes, assertion_id, 0u64);
                 let n: u64 = Mapping::get_or_use(deny_votes, assertion_id, 0u64);
                 assert_eq(outcome, vote_accepts_assertion_logic(y, n));
@@ -372,8 +372,8 @@ program dark_optimistic_oracle.aleo {
     }
 
     fn collect_protocol_fees(public fees_amount: u128) -> Final {
-        let f: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, self.caller, fees_amount, 0u32);
-        let caller: address = self.caller;
+        let f: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, std::ctx::caller(), fees_amount, 0u32);
+        let caller: address = std::ctx::caller();
         return final {
             let o: address = Mapping::get(fee_collector, 0u8); // may fail in case contract is not initialized;
             assert_eq(caller, o);

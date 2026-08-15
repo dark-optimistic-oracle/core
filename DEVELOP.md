@@ -15,7 +15,7 @@ needed.
 
 ## Contract work completed
 
-- Replaced mock time with Aleo `block.height`.
+- Replaced mock time with Aleo `std::ctx::block_height()`.
 - Added minimum deadline windows and safe arithmetic bounds.
 - Added one-time claim guards for asserter and disputer awards.
 - Added `verify_assertion_outcome` so consumer programs can bind an assertion
@@ -79,12 +79,17 @@ also passed in `predmkt`: market creation, post-close assertion, grace-period
 wait, undisputed settlement, full winning-supply burn, and redemption of the
 combined collateral pool.
 
-Local validation used Leo `4.3.4`, snarkOS `4.8.1` with the `test_network`
+Historical local-devnet validation used Leo `4.3.4`, snarkOS `4.8.1` with the `test_network`
 feature, and the explicit 17-entry consensus schedule through height 20. Leo
 normally builds that snarkOS itself. On this macOS host its installer could not
 resolve Xcode's `@rpath/libclang.dylib`, so validation used a manually built
 binary of the same compatible version at the same ignored `./snarkos` path.
 This is a host-toolchain fallback, not a second runtime dependency.
+
+The 2026-08-15 Testnet upgrade moved the source and manifests to Leo `4.4.1`
+and the equivalent `std::ctx` syntax required by that release. Leo 4.4.1 uses
+snarkVM/snarkOS 4.9.0 fee rules, which are required after the network's newer
+consensus activation; Leo 4.3.4 underestimates the current deployment base fee.
 
 ## Public deployment status
 
