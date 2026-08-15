@@ -77,6 +77,11 @@ Verification time: 2026-08-15 07:04 EDT (computer local time).
 
 - The program ID, all existing structs, records, and mappings are unchanged.
   No state migration or reinitialization is required.
+- A first live upgrade attempt was rejected locally by Leo before broadcast
+  because the candidate had removed the initializer's historical finalize input.
+  The candidate was corrected to retain that captured caller and additionally
+  assert that both signer and caller are the administrator. The rerun passed
+  14/14 tests and compilation; no rejected-candidate transaction or fee existed.
 - Public deployment builds substitute one identical administrator into both
   upgrade and initialization authorization and fail if either substitution is
   absent.

@@ -130,6 +130,11 @@ program dark_optimistic_oracle.aleo {
     fn initialize() -> Final {
         let initializer: address = self.signer;
         assert(caller_is_protocol_admin_logic(initializer));
+        // Preserve the original finalize input while requiring a direct call by
+        // the same administrator. Aleo upgrades require finalize interfaces to
+        // remain compatible with the deployed edition.
+        let caller: address = self.caller;
+        assert(caller_is_protocol_admin_logic(caller));
         let name: u128 = 355052645276405935372531202689035365u128; // "Dark Opt Oracle" ascii encoded
         let symbol: u128 = 1146048338u128; // "DOOR" ascii encoded
         let decimals: u8 = 6u8;
@@ -149,11 +154,11 @@ program dark_optimistic_oracle.aleo {
 
         // Distribute supply intended for treasury.
         let supply: u128 = max_supply / 10u128; // 10% of the supply is minted to the treasury. The rest is reserved for potential inflation.
-        let f2: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, PROTOCOL_ADMIN, supply, 0u32);
+        let f2: Final = token_registry.aleo::mint_public(DOOR_TOKEN_ID, caller, supply, 0u32);
         // The remaining registered supply is reserved for protocol-enforced rewards.
 
         return final {
-            Mapping::set(fee_collector, 0u8, PROTOCOL_ADMIN);
+            Mapping::set(fee_collector, 0u8, caller);
             f1.run();
             f2.run();
         };
