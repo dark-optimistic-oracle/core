@@ -139,3 +139,46 @@ This is a network inclusion-capacity blocker, not a source-compatibility or
 authorization rejection. The accepted and aborted evidence, safe retry command,
 and post-attempt balance/state checks are recorded in the prediction-market and
 frontend `LOG.md` files and in `DEPLOYMENTS.md`. Mainnet remains unattempted.
+
+## 2026-08-15 — Initialization upgrade-rule assessment
+
+Verification time: 2026-08-15 09:32 EDT (computer local time).
+
+The active snarkVM 4.9 upgrade checker treats Aleo's special `constructor` and
+an application function named `initialize` differently. A constructor cannot
+be added, deleted, or modified. Existing ordinary functions and finalize scopes
+may change logic provided their function input/output types and finalize-input
+types remain stable. Existing imports, mappings, structs, records, and closures
+must also remain compatible.
+
+The deployed Testnet constructor and the freshly compiled candidate constructor
+were compared directly and match byte-for-byte:
+
+`assert.eq program_owner aleo1a2k4a9phy4kklx2ad0aed0lgvyzaegf0gfp85uldzhjzn8tt05zsjmfjnf;`
+
+`initialize` remains a zero-input function returning one program future, and
+its finalize inputs remain `address.public`,
+`token_registry.aleo/register_token.future`, and
+`token_registry.aleo/mint_public.future`. The candidate changes only internal
+logic by checking signer and caller before producing those same futures.
+
+A disposable Devnet program then tested the exact rule operationally:
+
+- edition-0 deployment: `at1kmvyghxp3ap534sjj4rkwf9eppmmuq2upjawa0y7nn4l2hjgtuzsyn36rq`;
+- edition-1 upgrade after adding administrator checks inside `initialize`:
+  `at1hwq2gmu4zj4000jfjzkgn5w4sskx5jmldt5v57sqq5yakva3ac8q43djuy`;
+- accepted post-upgrade `initialize` execution:
+  `at1jxl4yk280d9yut0gawyqydsy4tustu6xx2zjnkc4w76wurx3tu9qrtapzg`.
+
+The local API reported edition 1 and the initialized mapping contained the
+expected Devnet administrator. This used only disposable Devnet credits. The
+available snarkOS 4.8.1 fixture used consensus V17 while Leo 4.4.1 warned that
+it expected V18; the constructor/function compatibility rule is the same in
+the inspected active snarkVM 4.9 source, and the Testnet client already passed
+that compatibility check when creating the eight broadcast candidates.
+
+Conclusion: changing the `initialize` function is not the Testnet obstacle.
+The sufficient blocker observed on every broadcast remains the candidate's
+`3481397` combined deployment density: at 75,000 density units per certificate,
+it needs at least 47 certificates, while the target blocks provided only
+30–44. No Testnet transaction was created during this assessment.

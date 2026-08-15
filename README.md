@@ -60,6 +60,14 @@ programs have an explicit `@admin` constructor bound to
 `aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px`, so future
 deployments can be upgraded only by that admin.
 
+In Aleo upgrade terminology, that special `constructor` is immutable. The
+application transition named `initialize` is an ordinary function and its
+logic may be upgraded when its input/output types and finalize-input types stay
+compatible. The audited candidate keeps the constructor exactly unchanged and
+preserves the edition-0 `initialize` interface while adding administrator
+checks. A disposable Devnet edition-0 to edition-1 upgrade and post-upgrade
+`initialize` execution confirmed this behavior; see [AUDIT.md](AUDIT.md).
+
 Oracle initialization, the initial treasury mint, and fee collection are bound
 to the same administrator, preventing another account from initializing a newly
 deployed instance first.

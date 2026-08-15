@@ -121,3 +121,12 @@ generic devnet account.
 
 The dated engineering audit, remediation dispositions, and explicitly accepted
 residual risks are in [AUDIT.md](AUDIT.md).
+
+The 2026-08-15 follow-up distinguished Aleo's immutable upgrade-policy
+`constructor` from the ordinary application function named `initialize`.
+Compiled edition 0 and candidate constructors match byte-for-byte; the
+initializer's function and finalize interfaces also match. A disposable local
+program upgraded from edition 0 to edition 1 after adding signer/caller checks
+inside `initialize`, then successfully executed that upgraded function. The
+remaining public-oracle obstacle is block-wide deployment density, not an
+initializer restriction.
