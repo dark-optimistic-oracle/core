@@ -84,8 +84,11 @@ the secure administrator only in a temporary build tree; it never writes the
 testnet address or key into contract source.
 
 ```zsh
-./deploy_testnet.sh
+LEO_BIN=/path/to/leo-4.4.1 ./deploy_testnet.sh
 ```
+
+The script requires Leo 4.4.1 and refuses older fee rules. Set `LEO_BIN` only
+when the matching binary is not the `leo` on your `PATH`.
 
 Use `./deploy_testnet.sh --resume` after an interrupted run whose deployment
 transaction may already have been accepted. It verifies and skips an existing
@@ -96,9 +99,12 @@ against the canonical registry, deploys and initializes a new
 oracle, or performs an admin-authorized upgrade when the oracle already exists.
 It fails closed if the official API cannot determine the current program state.
 
-The shared oracle is now deployed and initialized on Testnet. See
+The shared oracle is deployed and initialized at edition 0 on Testnet. The
+audited edition-1 source is committed and tested, but its large upgrade
+transactions were aborted in target blocks with insufficient consensus
+certificate capacity and charged no fee. See
 [DEPLOYMENTS.md](DEPLOYMENTS.md) for its program address, administrator,
-accepted transaction IDs, and the distinct local-devnet account roles. The
+attempt evidence, and the distinct local-devnet account roles. The
 combined oracle-plus-market deployment is recorded in the `predmkt` repository.
 
 New voting rights may be purchased only until 10 blocks before the voting

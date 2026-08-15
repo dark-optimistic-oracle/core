@@ -58,7 +58,7 @@ current public Testnet administrator is:
   do not attempt to install the live canonical registry into a test ledger.
 - `deploy_testnet.sh` verifies that the Testnet key controls the configured
   administrator, substitutes it into upgrade and initialization authorization,
-  builds against canonical `token_registry.aleo`, and deploys
+  requires Leo 4.4.1, builds against canonical `token_registry.aleo`, and deploys
   or upgrades with confirmation checks. Public initialization executes the
   deployed program directly, while `--resume` safely skips an already accepted
   deployment.
@@ -73,7 +73,9 @@ zsh -n *.sh cli/*.sh
 git diff --check
 ```
 
-The current unit result is 14/14 passing. The same oracle source also passes
+The current release unit result is 10/10 passing. Two never-deployed audit-only
+entry points were removed to reduce deployment density; the administrator and
+right-purchase cutoff checks remain in production transitions. The same oracle source also passes
 inside the combined prediction-market suite. A full deployed local lifecycle
 also passed in `predmkt`: market creation, post-close assertion, grace-period
 wait, undisputed settlement, full winning-supply burn, and redemption of the
@@ -93,10 +95,13 @@ consensus activation; Leo 4.3.4 underestimates the current deployment base fee.
 
 ## Public deployment status
 
-`dark_optimistic_oracle.aleo` was originally deployed to Testnet at edition `0`
-and initialized against the canonical `token_registry.aleo`. Its 2026-08-15
-security upgrade and preserved-state checks are recorded in `DEPLOYMENTS.md`
-and `LOG.md`. Its configured admin,
+`dark_optimistic_oracle.aleo` is deployed to Testnet at edition `0` and
+initialized against the canonical `token_registry.aleo`. Its audited edition-1
+candidate is interface-compatible, but every broadcast in the 2026-08-15
+session landed in a target block below the consensus V18 deployment-density
+capacity and was aborted without a fee. The attempts and preserved-state checks
+are recorded in `DEPLOYMENTS.md` and the frontend/prediction-market `LOG.md`
+files. Its configured admin,
 fee collector, and initial DOOR recipient are the dedicated shared Testnet
 account documented in [DEPLOYMENTS.md](DEPLOYMENTS.md). The prediction-market
 repository performed the coordinated deployment, so rerunning the standalone
@@ -108,8 +113,9 @@ The public API verified the program, its edition, and the initialized
 the frontend also falls back between the two official `/v2` hosts during
 temporary propagation differences.
 
-After the later funding transfer and all three accepted transactions, the
-dedicated deployer retained `11.723278` public Testnet credits. Request future
+After the accepted prediction-market edition-1 upgrade and fee-free oracle
+aborts, the shared dedicated deployer retained `949.027761` public Testnet
+credits. Request future
 deployment or upgrade funds for that dedicated address, not the retained
 generic devnet account.
 

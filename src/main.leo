@@ -111,14 +111,6 @@ program dark_optimistic_oracle.aleo {
         return assertion_is_newer_than_logic(creation_height, minimum_creation_height);
     }
 
-    fn caller_is_protocol_admin(public caller: address) -> bool {
-        return caller_is_protocol_admin_logic(caller);
-    }
-
-    fn vote_right_buy_is_open(public current_height: u32, public voting_deadline: u32) -> bool {
-        return vote_right_buy_is_open_logic(current_height, voting_deadline);
-    }
-
     fn balance_key(public token_id: field, public account: address) -> public field {
         let owner: token_registry.aleo::TokenOwner = token_registry.aleo::TokenOwner {
             token_id: token_id,

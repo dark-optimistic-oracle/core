@@ -2,6 +2,17 @@
 set -euo pipefail
 set +x
 
+LEO_BIN="${LEO_BIN:-leo}"
+if ! command -v "$LEO_BIN" >/dev/null 2>&1; then
+  echo "Leo is required. Install Leo 4.4.1 or set LEO_BIN to that binary."
+  exit 1
+fi
+LEO_VERSION="$("$LEO_BIN" --version 2>/dev/null | rg -o '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+if [[ "$LEO_VERSION" != "4.4.1" ]]; then
+  echo "Leo 4.4.1 is required for the current Testnet consensus; found ${LEO_VERSION:-unknown}."
+  exit 1
+fi
+
 SCRIPT_DIR="${0:A:h}"
 cd "$SCRIPT_DIR"
 
@@ -53,7 +64,7 @@ if [[ "$PROTOCOL" == "$DEVNET_ADMIN" ]]; then
   exit 1
 fi
 
-DERIVED_ADMIN="$(leo account import "$PRIVATE_KEY" 2>/dev/null | rg -o 'aleo1[a-z0-9]{58}' | tail -1)"
+DERIVED_ADMIN="$("$LEO_BIN" account import "$PRIVATE_KEY" 2>/dev/null | rg -o 'aleo1[a-z0-9]{58}' | tail -1)"
 if [[ "$DERIVED_ADMIN" != "$PROTOCOL" ]]; then
   echo "TESTNET_PRIVATE_KEY does not control PROTOCOL; refusing deployment."
   exit 1
@@ -77,7 +88,7 @@ if ! rg -q "@admin\\(address=\"${PROTOCOL}\"\\)" "$DEPLOY_ROOT/src/main.leo" ||
 fi
 
 echo "Building dark_optimistic_oracle.aleo against canonical testnet token_registry.aleo..."
-leo --home "$DEPLOY_ROOT/.aleo" build \
+"$LEO_BIN" --home "$DEPLOY_ROOT/.aleo" build \
   --network testnet \
   --endpoint "$TESTNET_ENDPOINT" \
   --path "$DEPLOY_ROOT"
@@ -190,12 +201,12 @@ if [[ "$PROGRAM_STATUS" == "200" ]]; then
   else
     echo "Program already exists on testnet; broadcasting an administrator-authorized upgrade."
     run_checked "Upgrade" "Upgrade confirmed!" deploy \
-      leo upgrade "${COMMON_ARGS[@]}" --path "$DEPLOY_ROOT" --skip token_registry.aleo
+      "$LEO_BIN" upgrade "${COMMON_ARGS[@]}" --path "$DEPLOY_ROOT" --skip token_registry.aleo
   fi
 elif [[ "$PROGRAM_STATUS" == "404" ]]; then
   echo "Program is not deployed; broadcasting the initial deployment."
   run_checked "Deploy" "Deployment confirmed!" deploy \
-    leo deploy "${COMMON_ARGS[@]}" --path "$DEPLOY_ROOT" --skip token_registry.aleo
+    "$LEO_BIN" deploy "${COMMON_ARGS[@]}" --path "$DEPLOY_ROOT" --skip token_registry.aleo
 else
   echo "Unable to determine testnet program state (HTTP ${PROGRAM_STATUS})."
   exit 1
@@ -209,7 +220,7 @@ FEE_COLLECTOR="$(
 if [[ -z "$FEE_COLLECTOR" || "$FEE_COLLECTOR" == "null" || "$FEE_COLLECTOR" == '"null"' ]]; then
   echo "Initializing the DOOR token in canonical token_registry.aleo..."
   run_checked "Initialize" "Execution confirmed!" execute \
-    leo execute "${PROGRAM_ID}::initialize" "${COMMON_ARGS[@]}" --no-local
+    "$LEO_BIN" execute "${PROGRAM_ID}::initialize" "${COMMON_ARGS[@]}" --no-local
 else
   echo "dark_optimistic_oracle.aleo is already initialized; skipping initialize."
 fi

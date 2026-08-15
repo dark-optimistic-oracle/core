@@ -97,3 +97,45 @@ Verification time: 2026-08-15 07:04 EDT (computer local time).
 
 This remediation reduces the identified implementation risks but is not a
 formal verification or independent third-party audit.
+
+## 2026-08-15 — Testnet upgrade verification
+
+Verification time: 2026-08-15 08:12 EDT (computer local time).
+
+### Compatibility checks
+
+- Leo `4.4.1` was used because its snarkVM/snarkOS 4.9.0 rules match active
+  Testnet consensus V18. Leo `4.3.4` calculated an obsolete lower deployment
+  fee; its candidate was rejected without an accepted transaction or fee.
+- The initializer retains the edition-0 finalize input order while checking
+  both the direct caller and signer against the configured administrator.
+- The final candidate preserves the deployed program ID, constructor admin,
+  every existing mapping/record/struct, every callable function, and every
+  finalize input type and order. It does not reinitialize or migrate state.
+- Two never-deployed audit-only helper entry points were removed from the
+  candidate. The production administrator and voting-cutoff checks remain in
+  `initialize` and `new_voting_right`. Both source copies pass all 10 retained
+  Leo tests.
+
+### Testnet result
+
+The compatible oracle candidate has combined circuit density `3481397` and a
+current minimum fee of `29.406397` credits. Consensus V18 permits `75000`
+density units per certificate in the target block, so this deployment requires
+at least 47 certificates. Every transaction that reached validators during this
+session landed in a block with only 30–44 certificates and was recorded by the
+ledger as aborted. Under this path the fee was not charged. Other attempts
+failed at the provider with HTTP 522 before an ID was returned.
+
+The latest verified state therefore remains:
+
+- `dark_optimistic_oracle.aleo`: edition `0`;
+- fee collector and upgrade administrator: the documented dedicated Testnet
+  address;
+- representative QA assertion `187031922field`: unchanged;
+- security fixes: committed and release-ready, but not yet active on Testnet.
+
+This is a network inclusion-capacity blocker, not a source-compatibility or
+authorization rejection. The accepted and aborted evidence, safe retry command,
+and post-attempt balance/state checks are recorded in the prediction-market and
+frontend `LOG.md` files and in `DEPLOYMENTS.md`. Mainnet remains unattempted.
