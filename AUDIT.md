@@ -182,3 +182,29 @@ The sufficient blocker observed on every broadcast remains the candidate's
 `3481397` combined deployment density: at 75,000 density units per certificate,
 it needs at least 47 certificates, while the target blocks provided only
 30–44. No Testnet transaction was created during this assessment.
+
+## 2026-08-15 — Live edition-1 activation verification
+
+Verification time: 2026-08-15 10:18 EDT (computer local time).
+
+The exact audited candidate was accepted as Testnet edition `1` in transaction
+`at1900gz2klm9we2deqarpv2fpqhnjqjr3cvr43stxq4525l6s9zupq6r0v5p`. It landed
+in block `18745064`, whose 78 certificates exceeded the 47-certificate minimum
+for the candidate's `3481397` combined density. Its public fee was
+`29.406397` credits. The administrator balance changed exactly from
+`949027761u64` to `919621364u64`; earlier aborted candidates remained fee-free.
+
+The accepted deployment body is a formatting-normalized exact match for the
+locally compiled Leo 4.4.1 instructions. Independent provider reads confirmed
+the immutable constructor administrator, signer and caller checks in
+`initialize`, and the 10-block voting-right purchase cutoff. The existing fee
+collector and retained assertion `187031922field` were unchanged, including its
+creation height, asserter, absent disputer, and vote counts. The deployment
+workflow found the initialized mapping and correctly skipped `initialize`, so
+the DOOR registration, treasury mint, and prior mappings were not repeated.
+
+The core suite passed 10/10 tests immediately before submission. Webapp lint,
+14/14 tests, and production build passed after activation; the prediction-market
+frontend passed lint/static checks, 36/36 tests, and production build. Findings
+CORE-2026-08-15-01 and CORE-2026-08-15-03 are now remediated in the live Testnet
+edition. Accepted residual risks and Mainnet restrictions are unchanged.

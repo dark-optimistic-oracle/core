@@ -107,10 +107,10 @@ against the canonical registry, deploys and initializes a new
 oracle, or performs an admin-authorized upgrade when the oracle already exists.
 It fails closed if the official API cannot determine the current program state.
 
-The shared oracle is deployed and initialized at edition 0 on Testnet. The
-audited edition-1 source is committed and tested, but its large upgrade
-transactions were aborted in target blocks with insufficient consensus
-certificate capacity and charged no fee. See
+The shared oracle is deployed and initialized at edition 1 on Testnet. The
+audited upgrade was accepted in transaction
+`at1900gz2klm9we2deqarpv2fpqhnjqjr3cvr43stxq4525l6s9zupq6r0v5p`; existing
+state was preserved and initialization was not repeated. See
 [DEPLOYMENTS.md](DEPLOYMENTS.md) for its program address, administrator,
 attempt evidence, and the distinct local-devnet account roles. The
 combined oracle-plus-market deployment is recorded in the `predmkt` repository.

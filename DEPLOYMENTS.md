@@ -1,6 +1,6 @@
 # Network addresses and deployments
 
-Last verified: 2026-08-15 08:12 EDT
+Last verified: 2026-08-15 10:18 EDT
 
 No private key is recorded here. Real keys remain only in the ignored,
 mode-`600` `.env.private` file.
@@ -14,8 +14,8 @@ mode-`600` `.env.private` file.
 | `aleo1a2k4a9phy4kklx2ad0aed0lgvyzaegf0gfp85uldzhjzn8tt05zsjmfjnf` | Dedicated shared deployer, upgrade administrator, oracle fee collector, and initial DOOR recipient. This is the address to fund for later Testnet deployments or upgrades. Its key is `TESTNET_PRIVATE_KEY`. |
 | `aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5rsvzp9px` | Retained generic devnet account that temporarily received faucet funds and relayed them to the dedicated Testnet account. Do not use it as a public-network administrator. Its retained key is `DEVNET_PRIVATE_KEY`. |
 
-After the accepted prediction-market edition-1 upgrade and fee-free oracle
-aborts, the shared dedicated account had `949.027761` public credits. Faucet
+After the accepted prediction-market and oracle edition-1 upgrades, the shared
+dedicated account had `919.621364` public credits. Faucet
 balances change over time; query them with `leo -q query` before relying on this
 point-in-time value.
 
@@ -23,7 +23,7 @@ point-in-time value.
 
 | Program | Deterministic program address | Testnet state |
 | --- | --- | --- |
-| `dark_optimistic_oracle.aleo` | `aleo1nyflwg9mjfkfp2n9mtng0snxj9qrhahkjxp5l9pag4zxm3qrssrqwv8tml` | Deployed at edition `0` and initialized. The audited edition-1 source is ready, but Testnet capacity aborted every compatible upgrade attempt in this session. |
+| `dark_optimistic_oracle.aleo` | `aleo1nyflwg9mjfkfp2n9mtng0snxj9qrhahkjxp5l9pag4zxm3qrssrqwv8tml` | Upgraded in place to edition `1`; initialization and existing mappings were preserved. |
 | `token_registry.aleo` | `aleo1m50rc7x4cgsr5y8h2s3d6f7rzm5tvz5zqcz7ak55gmkv76pgu5qsuyq0k7` | Canonical public dependency, edition `1` when deployment was performed; not deployed or administered by this project. |
 
 Program addresses belong to program IDs and have no user-held private key. The
@@ -38,6 +38,7 @@ program upgrades through the Leo `@admin` constructor.
 | Transfer `40` public credits from the relay account to the dedicated deployer | `at1tetgzhg9rpgdvwhwt3mtvn28a5kjw5m5j3s0p9h869j4jgdgrvpqe7kw0g` |
 | Deploy `dark_optimistic_oracle.aleo` | `at1lm5mwg6427uhnpqpps6n6jcxz7qvec0d6srsxnl3r93y7cydxvgszcauw8` |
 | Initialize the oracle and register DOOR | `at13teruy8sz5y3awfhlxhz45caz4er85eaed4ga4g5x7f6545rwupqd3a4vv` |
+| Upgrade `dark_optimistic_oracle.aleo` to edition 1 | `at1900gz2klm9we2deqarpv2fpqhnjqjr3cvr43stxq4525l6s9zupq6r0v5p` |
 
 ### 2026-08-15 upgrade status
 
@@ -50,11 +51,15 @@ They charged no fee and did not change the program or its mappings. Several
 provider HTTP 522 failures happened before an ID was returned and likewise made
 no ledger change.
 
-The oracle therefore remains edition 0. The fee collector and representative
-assertion `187031922field` were verified unchanged after the attempts. Exact
-candidate IDs, blocks, certificate counts, and the coordinated accepted market
-upgrade are recorded in the checked-in frontend and prediction-market
-`LOG.md` files.
+The next controlled candidate landed in block `18745064`, whose 78 certificates
+provided sufficient capacity, and was accepted as edition 1 in transaction
+`at1900gz2klm9we2deqarpv2fpqhnjqjr3cvr43stxq4525l6s9zupq6r0v5p`. Its fee
+transition is
+`au1w9s7u95tn5h0lgn9gf5nvvwm4sh3gymjzpzprkvckfg2ypu2qq8q8ap0e4`; the public
+fee was `29.406397` credits. The fee collector and representative assertion
+`187031922field` were verified unchanged after acceptance. Exact candidate IDs,
+blocks, certificate counts, and state evidence are recorded in the checked-in
+frontend and prediction-market `LOG.md` files.
 
 The DOOR token ID is
 `346688784394585735039324415800163929700021701423791533632764818774905958305field`.

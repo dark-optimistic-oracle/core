@@ -95,13 +95,13 @@ consensus activation; Leo 4.3.4 underestimates the current deployment base fee.
 
 ## Public deployment status
 
-`dark_optimistic_oracle.aleo` is deployed to Testnet at edition `0` and
-initialized against the canonical `token_registry.aleo`. Its audited edition-1
-candidate is interface-compatible, but every broadcast in the 2026-08-15
-session landed in a target block below the consensus V18 deployment-density
-capacity and was aborted without a fee. The attempts and preserved-state checks
-are recorded in `DEPLOYMENTS.md` and the frontend/prediction-market `LOG.md`
-files. Its configured admin,
+`dark_optimistic_oracle.aleo` is deployed to Testnet at edition `1` and
+initialized against the canonical `token_registry.aleo`. The audited upgrade
+was accepted in transaction
+`at1900gz2klm9we2deqarpv2fpqhnjqjr3cvr43stxq4525l6s9zupq6r0v5p` after landing
+in a 78-certificate block. Earlier low-capacity aborts charged no fee. The
+attempts, accepted fee, and preserved-state checks are recorded in
+`DEPLOYMENTS.md` and the frontend/prediction-market `LOG.md` files. Its configured admin,
 fee collector, and initial DOOR recipient are the dedicated shared Testnet
 account documented in [DEPLOYMENTS.md](DEPLOYMENTS.md). The prediction-market
 repository performed the coordinated deployment, so rerunning the standalone
@@ -113,9 +113,8 @@ The public API verified the program, its edition, and the initialized
 the frontend also falls back between the two official `/v2` hosts during
 temporary propagation differences.
 
-After the accepted prediction-market edition-1 upgrade and fee-free oracle
-aborts, the shared dedicated deployer retained `949.027761` public Testnet
-credits. Request future
+After both edition-1 upgrades, the shared dedicated deployer retained
+`919.621364` public Testnet credits. Request future
 deployment or upgrade funds for that dedicated address, not the retained
 generic devnet account.
 
@@ -128,5 +127,5 @@ Compiled edition 0 and candidate constructors match byte-for-byte; the
 initializer's function and finalize interfaces also match. A disposable local
 program upgraded from edition 0 to edition 1 after adding signer/caller checks
 inside `initialize`, then successfully executed that upgraded function. The
-remaining public-oracle obstacle is block-wide deployment density, not an
-initializer restriction.
+public upgrade subsequently succeeded in a block with sufficient deployment
+capacity, confirming that `initialize` was not an obstacle.
